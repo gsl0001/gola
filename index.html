@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gola — help and support</title>
+<meta name="description" content="Setup, tutorials and support for Gola, a radial launcher for Windows.">
+<style>
+  :root {
+    --bg:#0E0E14; --card:#15151C; --ink:#F2F2F7; --dim:#B4B4C6;
+    --line:#26262F; --accent:#6E86FF; --running:#4AE38B;
+  }
+  @media (prefers-color-scheme: light) {
+    :root { --bg:#F4F5F9; --card:#fff; --ink:#12121A; --dim:#5A5F72; --line:#E2E4EC; --accent:#3B57E8; }
+  }
+  * { box-sizing:border-box }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.65 "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap { max-width:760px; margin:0 auto; padding:56px 22px 96px }
+  header { display:flex; align-items:center; gap:14px; margin-bottom:8px }
+  h1 { font-size:30px; margin:0; letter-spacing:-.02em }
+  .tag { color:var(--dim); margin:6px 0 40px }
+  h2 { font-size:20px; margin:44px 0 6px; letter-spacing:-.01em }
+  h3 { font-size:15px; margin:26px 0 4px }
+  p, li { color:var(--dim) }
+  p { margin:10px 0 }
+  strong { color:var(--ink); font-weight:600 }
+  kbd {
+    background:var(--card); border:1px solid var(--line); border-bottom-width:2px;
+    border-radius:6px; padding:1px 7px; font:inherit; font-size:13px; color:var(--ink);
+  }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:16px 0 }
+  ol, ul { padding-left:22px }
+  li { margin:7px 0 }
+  a { color:var(--accent) }
+  footer { margin-top:64px; padding-top:22px; border-top:1px solid var(--line); color:var(--dim); font-size:14px }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#8FDCFF"/><stop offset="1" stop-color="#B44BFF"/>
+    </linearGradient></defs>
+    <!-- the mark: 300 degree aperture opening at 1 o'clock -->
+    <path d="M 32.5 12.8 A 14.4 14.4 0 1 1 20 5.6" fill="none"
+          stroke="url(#g)" stroke-width="8.8" stroke-linecap="round"/>
+  </svg>
+  <h1>Gola</h1>
+</header>
+<p class="tag">A radial launcher for Windows. Hold a chord, a wheel opens under your cursor, let go.</p>
+
+<h2>Setup</h2>
+<div class="card">
+  <ol>
+    <li>Install from the Microsoft Store, then launch Gola once. It lives in the tray — there is no main window.</li>
+    <li><strong>Hold <kbd>Ctrl</kbd>+<kbd>Alt</kbd></strong>. The wheel opens under your cursor.</li>
+    <li>Slide toward a slice and <strong>release</strong> to run it. Release outside the wheel to dismiss.</li>
+    <li>Right-click the tray icon → <strong>Settings</strong> to add your own apps and change the trigger.</li>
+  </ol>
+</div>
+<p>If nothing happens when you hold the chord, see <a href="#nothing">the wheel does nothing</a> below.</p>
+
+<h2>The wheel</h2>
+<p>The <strong>inner ring</strong> is your apps plus the System, Tools and Shelf sections. The
+<strong>outer ring</strong> is whatever the slice you are pointing at contains — dwell for a moment to
+preview it without committing.</p>
+<p>App slices behave like taskbar buttons: not running, release launches it; one window, release
+focuses it; several, the outer ring fans them out as live previews. A green dot and a count mean the
+app is open.</p>
+<p><kbd>1</kbd>–<kbd>9</kbd> pick a slice directly. <kbd>Esc</kbd> closes. Dwell in the centre to go
+back up a level.</p>
+
+<h2>Tools</h2>
+<p>Timer, calculator, colour picker, clipboard history, magnifier, screenshot, quick note, caffeine
+and focus dim. They open as popovers rather than windows — <kbd>Esc</kbd> closes one, or pin it to
+keep it floating.</p>
+
+<h2>Shelf</h2>
+<p>A seven-day inbox of recent files with preview, search and archive. You can feed it from your
+phone by connecting your own Telegram bot: message <strong>@BotFather</strong>, run
+<code>/newbot</code>, then paste the token into Settings. Use a new bot — Telegram allows only one
+long-poller per bot, so a shared one would steal messages.</p>
+
+<h2>Dictation</h2>
+<p>With a text field focused, hold the chord and speak; Gola types what you said into that field.
+Speech recognition runs <strong>on your machine</strong>, not in the cloud. The first time you dictate
+it downloads a speech model (about 141&nbsp;MB for the default) — that happens once, and everything
+after it works offline. Turn it off in Settings → Voice.</p>
+
+<h2>Common questions</h2>
+
+<h3 id="spyware">Is Gola spyware?</h3>
+<p>No, and the question is fair — it does install a system-wide keyboard hook, capture the screen and
+open the microphone, so here is exactly why. The keyboard hook is the only way Windows lets an app
+notice a key being <em>held and released</em>; Gola checks whether the keys match your trigger and
+passes them straight on, and never records or transmits them. Screen capture draws the frosted
+backdrop and the live window previews, and stays on your machine. The microphone opens only while you
+are actively dictating. There is no telemetry, no analytics and no account. Full detail is in the
+<a href="https://gist.github.com/gsl0001/0c2ba872f82c192507a5e0ded852b368">privacy policy</a>.</p>
+
+<h3>Why did my antivirus flag it?</h3>
+<p>Keyboard hooks, screen capture and running configured commands together are the exact pattern
+heuristic antivirus is built to notice, so false positives happen even though every one of those is
+needed for the product to work. The Store build is signed by Microsoft. If a scanner flags it,
+reporting it to that vendor as a false positive helps everyone.</p>
+
+<h3 id="nothing">The wheel does nothing when I hold the chord</h3>
+<p>Almost always a trigger conflict. On keyboard layouts that use <strong>AltGr</strong> — which
+Windows reports as Ctrl+Alt — the default chord collides with typing. Change it in Settings → Keymap
+to something like <kbd>Ctrl</kbd>+<kbd>Shift</kbd>.</p>
+
+<h3>My mouse thumb button doesn't trigger it</h3>
+<p>If your mouse has its own software (Logitech Options+, for example), leave that button set to the
+default Back/Forward there. A remapped macro or keystroke never reaches Gola as a button.</p>
+
+<h3>Where does Gola keep my data?</h3>
+<p><code>%APPDATA%\Gola\</code> for settings, and <code>%USERPROFILE%\Gola\</code> for screenshots,
+notes, Shelf files and the speech model. Uninstalling removes the program; delete those folders to
+remove the data.</p>
+
+<h2>Support</h2>
+<p>Something broken, or a question not answered here? Email
+<a href="mailto:gsl456789@gmail.com">gsl456789@gmail.com</a>.</p>
+
+<footer>
+  Gola — a radial launcher for Windows ·
+  <a href="https://gist.github.com/gsl0001/0c2ba872f82c192507a5e0ded852b368">Privacy policy</a>
+</footer>
+
+</div>
+</body>
+</html>
