@@ -15,6 +15,10 @@ assets/       clips, posters, screenshots, trailer, favicon
 
 Open `index.html` in a browser to work on it. Anything pushed to `main` is live in a minute or so.
 
+Clips are versioned by filename (`window-fanout-2.mp4`). GitHub Pages gives no control over
+cache headers, so a corrected clip must get a new name — overwriting one in place leaves every
+returning visitor on the old file.
+
 ## Contact
 
 Questions or bugs: <gsl456789@gmail.com> ·
