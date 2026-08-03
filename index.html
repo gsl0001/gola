@@ -23,7 +23,6 @@
                 <stop offset="100%" stop-color="#B44BFF"/>
               </linearGradient>
             </defs>
-            <!-- Aperture Mark: 300° arc opening at 1 o'clock (0.36 stroke radius, 0.22 weight) -->
             <path d="M25.98 10.24 A11.52 11.52 0 1 1 16.00 4.48" fill="none" stroke="url(#brandApertureGrad)" stroke-width="7.04" stroke-linecap="round"/>
           </svg>
         </div>
@@ -68,12 +67,12 @@
     </div>
   </section>
 
-  <!-- Interactive Wheel Centerpiece -->
+  <!-- Step-by-Step Interactive Wheel Centerpiece -->
   <section id="playground" class="playground-section">
     <div class="container">
       <div class="section-header">
-        <h2>Interactive Radial Launcher</h2>
-        <p>The whole product is one gesture. Try the interactive wheel below to experience hold-flick-release.</p>
+        <h2>Interactive Step-by-Step Launcher</h2>
+        <p>Follow the guided step-by-step flow below. Press keys <kbd>1</kbd>–<kbd>8</kbd> or use your keyboard/mouse triggers.</p>
       </div>
 
       <div class="playground-card">
@@ -82,6 +81,16 @@
         </div>
 
         <div class="wheel-info-panel">
+          <!-- Step-by-Step Interactive Guide Card -->
+          <div class="active-slice-card" style="border-color: var(--accent-color);">
+            <div id="interactiveStepBadge" style="font-size:12px; font-weight:700; color:var(--accent-color); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px;">
+              Step 1 of 4 — Summon Wheel
+            </div>
+            <div id="interactiveStepPrompt" style="font-size:14.5px; color:var(--ink-primary); line-height:1.5;">
+              Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd> (or click a trigger below) to open the launcher wheel under your cursor.
+            </div>
+          </div>
+
           <div class="active-slice-card">
             <div id="activeSliceTitle" class="active-slice-title">
               <span>C</span> Claude
@@ -101,6 +110,9 @@
             </button>
             <button class="chord-trigger-btn" data-chord="Mouse">
               <span>Mouse / Trackpad (Back, Forward, Middle)</span>
+            </button>
+            <button id="nextStepBtn" class="btn btn-secondary" style="margin-top:8px; justify-content:center;">
+              Next Step (2/4) ➔
             </button>
           </div>
         </div>
@@ -160,7 +172,7 @@
     </div>
   </section>
 
-  <!-- Features Grid with Authentic Design Screenshots -->
+  <!-- Features Grid -->
   <section id="features" class="features-section">
     <div class="container">
       <div class="section-header">
@@ -214,7 +226,7 @@
     </div>
   </section>
 
-  <!-- Segoe Fluent Icons Inventory (Section 5d in Brand Doc) -->
+  <!-- Segoe Fluent Icons Inventory -->
   <section id="icons" class="features-section" style="border-top: 1px solid var(--border-line); padding: 72px 0;">
     <div class="container">
       <div class="section-header">

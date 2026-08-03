@@ -1,19 +1,19 @@
 /**
  * Ball / Gola Launcher Web Engine
  * Direct implementation of design/Ball - UI Reference.dc.html (Section 4a)
+ * Interactive Step-by-Step Guided Gesture State Machine
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  initRadialLauncher();
+  initStepByStepRadialLauncher();
   initFaqSearch();
   initAccordion();
 });
 
-function initRadialLauncher() {
+function initStepByStepRadialLauncher() {
   const canvasWrap = document.getElementById('wheelCanvasWrap');
   if (!canvasWrap) return;
 
-  // Exact launcher slices matching Section 4a of UI Reference
   const slices = [
     { id: 'claude', name: 'Claude', icon: 'C', running: true, count: 3, desc: '3 live windows open. Slide onto outer fan previews or release to focus main window.' },
     { id: 'chatgpt', name: 'ChatGPT', icon: 'G', running: true, count: 1, desc: '1 window running. Release to focus.' },
@@ -21,68 +21,91 @@ function initRadialLauncher() {
     { id: 'edge', name: 'Edge', icon: 'E', running: true, count: 2, desc: '2 browser windows open.' },
     { id: 'files', name: 'Files', icon: 'F', running: true, count: 1, desc: 'File Explorer active.' },
     { id: 'terminal', name: 'Terminal', icon: 'T', running: false, count: 0, desc: 'Not running. Release to open terminal window.' },
-    { id: 'system', name: 'System', icon: '⚙️', isSymbol: true, symbolCode: '&#xE770;', running: false, count: 6, desc: 'System controls: Settings, Task Manager, Wi-Fi, Volume, Sleep, Lock.' },
-    { id: 'tools', name: 'Tools', icon: '🛠️', isSymbol: true, symbolCode: '&#xE90F;', running: false, count: 10, desc: '10 popover utilities: Timer, Calculator, Color Picker, Clipboard, Magnifier, Screenshot, Note, Caffeine, Focus Dim, Dictate.' },
-    { id: 'shelf', name: 'Shelf', icon: '📥', isSymbol: true, symbolCode: '&#xE8F1;', running: false, count: 7, desc: '7-day file inbox with preview, search & Telegram bot integration.' }
+    { id: 'system', name: 'System', icon: '⚙️', isSymbol: true, running: false, count: 6, desc: 'System controls: Settings, Task Manager, Wi-Fi, Volume, Sleep, Lock.' },
+    { id: 'tools', name: 'Tools', icon: '🛠️', isSymbol: true, running: false, count: 10, desc: '10 popover utilities: Timer, Calculator, Color Picker, Clipboard, Magnifier, Screenshot, Note, Caffeine, Focus Dim, Dictate.' },
+    { id: 'shelf', name: 'Shelf', icon: '📥', isSymbol: true, running: false, count: 7, desc: '7-day file inbox with preview, search & Telegram bot integration.' }
   ];
 
+  // Guided Step-by-Step State
+  // Step 1: Hold Trigger Chord -> Step 2: Select Slice (Keys 1-8) -> Step 3: Dwell / Fan Out -> Step 4: Execute or Dismiss (Esc)
+  let currentStep = 1; 
   let activeIndex = 0;
+  let wheelOpen = true;
+
+  const stepBadge = document.getElementById('interactiveStepBadge');
+  const stepPrompt = document.getElementById('interactiveStepPrompt');
   const sliceTitle = document.getElementById('activeSliceTitle');
   const sliceDesc = document.getElementById('activeSliceDesc');
   const triggerBtns = document.querySelectorAll('.chord-trigger-btn');
+  const nextStepBtn = document.getElementById('nextStepBtn');
+
+  function updateStepUI() {
+    if (!stepBadge || !stepPrompt) return;
+
+    if (currentStep === 1) {
+      stepBadge.textContent = 'Step 1 of 4 — Summon Wheel';
+      stepPrompt.innerHTML = 'Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd> (or click a trigger below) to open the launcher wheel under your cursor.';
+    } else if (currentStep === 2) {
+      stepBadge.textContent = 'Step 2 of 4 — Target Slice';
+      stepPrompt.innerHTML = 'Press key <kbd>1</kbd>–<kbd>8</kbd> or hover over a slice to target an app or section.';
+    } else if (currentStep === 3) {
+      stepBadge.textContent = 'Step 3 of 4 — Outer Fan Out';
+      stepPrompt.innerHTML = 'Dwell on the slice to fan out live window previews on the outer ring.';
+    } else if (currentStep === 4) {
+      stepBadge.textContent = 'Step 4 of 4 — Execute / Dismiss';
+      stepPrompt.innerHTML = 'Press key <kbd>1</kbd>–<kbd>3</kbd> to focus a window, or press <kbd>Esc</kbd> / click outside to dismiss.';
+    }
+
+    if (nextStepBtn) {
+      if (currentStep < 4) {
+        nextStepBtn.textContent = `Next Step (${currentStep + 1}/4) ➔`;
+      } else {
+        nextStepBtn.textContent = 'Restart Guided Flow ↺';
+      }
+    }
+  }
 
   function renderSvgWheel() {
     const size = 620;
     const center = 310;
-    
-    // Geometry specs from Section 4a: hub r66, inner ring 100-196, fan ring 208-296, 2.5° slice gap
-    const hubRadius = 66;
     const rInner1 = 100;
     const rInner2 = 196;
     const rFan1 = 208;
     const rFan2 = 296;
     const gapAngleRad = (2.5 * Math.PI) / 180;
-
     const numSlices = slices.length;
     const totalStep = (2 * Math.PI) / numSlices;
 
     let svg = `<svg width="100%" height="100%" viewBox="0 0 ${size} ${size}" style="user-select:none; overflow:visible;">
       <defs>
-        <!-- Aperture Mark Gradient -->
         <linearGradient id="apertureGrad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stop-color="#8FDCFF"/>
           <stop offset="50%" stop-color="#5B6CFF"/>
           <stop offset="100%" stop-color="#B44BFF"/>
         </linearGradient>
 
-        <!-- Slice Glass Glow -->
         <filter id="sliceGlow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="5" result="blur" />
           <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
       </defs>
 
-      <!-- Backdrop Glass Blur Disc -->
       <circle cx="${center}" cy="${center}" r="${rFan2}" fill="rgba(8, 8, 14, 0.65)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
     `;
 
-    // Render Inner Ring Slices
+    // Inner Ring Slices
     slices.forEach((slice, i) => {
       const baseStartAngle = i * totalStep - Math.PI / 2;
       const baseEndAngle = (i + 1) * totalStep - Math.PI / 2;
-
-      // Apply 2.5° gap between slices
       const startAngle = baseStartAngle + gapAngleRad / 2;
       const endAngle = baseEndAngle - gapAngleRad / 2;
       const midAngle = (startAngle + endAngle) / 2;
 
       const isActive = i === activeIndex;
 
-      // Slice colors from Brand & UI Reference specs
       const fill = isActive ? 'rgba(110, 134, 255, 0.447)' : 'rgba(255, 255, 255, 0.149)';
       const stroke = isActive ? 'rgba(174, 187, 255, 0.8)' : 'rgba(255, 255, 255, 0.271)';
 
-      // Path data for inner ring sector
       const x1 = center + rInner1 * Math.cos(startAngle);
       const y1 = center + rInner1 * Math.sin(startAngle);
       const x2 = center + rInner2 * Math.cos(startAngle);
@@ -94,7 +117,6 @@ function initRadialLauncher() {
 
       const pathData = `M ${x1} ${y1} L ${x2} ${y2} A ${rInner2} ${rInner2} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${rInner1} ${rInner1} 0 0 0 ${x1} ${y1} Z`;
 
-      // Label & Badge Positions
       const labelRadius = (rInner1 + rInner2) / 2;
       const lx = center + labelRadius * Math.cos(midAngle);
       const ly = center + labelRadius * Math.sin(midAngle);
@@ -106,10 +128,8 @@ function initRadialLauncher() {
         </g>
       `;
 
-      // Draw Slice Badge & Text (Refined specs: no redundant "launch" text, 13px Segoe UI Semibold)
       svg += `
         <g style="pointer-events:none; transform: translate(${lx}px, ${ly}px);">
-          <!-- Icon Tile (44x44px) -->
           <rect x="-22" y="-32" width="44" height="44" rx="12" 
                 fill="rgba(255,255,255,0.11)" stroke="rgba(255,255,255,0.30)" stroke-width="1"/>
           
@@ -117,12 +137,10 @@ function initRadialLauncher() {
             ${slice.icon}
           </text>
 
-          <!-- Label -->
           <text x="0" y="26" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-weight="600" font-size="13" fill="#FFF">
             ${slice.name}
           </text>
 
-          <!-- Green Running Indicator Dot & Count -->
           ${slice.running ? `
             <g transform="translate(0, 40)">
               <circle cx="${slice.count > 1 ? -8 : 0}" cy="0" r="3.5" fill="#4AE38B" style="filter: drop-shadow(0 0 4px #4AE38B);" />
@@ -133,9 +151,9 @@ function initRadialLauncher() {
       `;
     });
 
-    // Outer Fan Ring for Active Slice
+    // Outer Fan Ring (Active during Steps 3 and 4)
     const activeSlice = slices[activeIndex];
-    if (activeSlice && activeSlice.count > 0) {
+    if (activeSlice && activeSlice.count > 0 && currentStep >= 3) {
       const activeMidAngle = (activeIndex + 0.5) * totalStep - Math.PI / 2;
       const fanAngleSpan = totalStep * 1.5;
       const fanStart = activeMidAngle - fanAngleSpan / 2;
@@ -153,11 +171,9 @@ function initRadialLauncher() {
       const fanPath = `M ${fx1} ${fy1} L ${fx2} ${fy2} A ${rFan2} ${rFan2} 0 0 1 ${fx3} ${fy3} L ${fx4} ${fy4} A ${rFan1} ${rFan1} 0 0 0 ${fx1} ${fy1} Z`;
 
       svg += `
-        <!-- Outer Fan Segment -->
         <path d="${fanPath}" fill="rgba(110, 134, 255, 0.447)" stroke="rgba(174, 187, 255, 0.8)" stroke-width="1" />
       `;
 
-      // Thumbnail previews inside outer fan
       for (let k = 0; k < Math.min(activeSlice.count, 3); k++) {
         const thumbAngle = fanStart + ((k + 0.5) * (fanAngleSpan / Math.min(activeSlice.count, 3)));
         const tx = center + ((rFan1 + rFan2) / 2) * Math.cos(thumbAngle);
@@ -175,12 +191,9 @@ function initRadialLauncher() {
       }
     }
 
-    // Center Hub & Aperture Mark
+    // Center Hub & Brand Aperture Mark
     svg += `
-      <!-- Center Disc Hub -->
-      <circle cx="${center}" cy="${center}" r="${hubRadius}" fill="rgba(8, 8, 13, 0.85)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      
-      <!-- Brand Aperture Mark (300° arc, opening at 1 o'clock) -->
+      <circle cx="${center}" cy="${center}" r="66" fill="rgba(8, 8, 13, 0.85)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
       <g transform="translate(${center - 26}, ${center - 26})">
         <svg width="52" height="52" viewBox="0 0 32 32">
           <path d="M25.98 10.24 A11.52 11.52 0 1 1 16.00 4.48" fill="none" stroke="url(#apertureGrad)" stroke-width="7.04" stroke-linecap="round"/>
@@ -191,51 +204,79 @@ function initRadialLauncher() {
     svg += `</svg>`;
     canvasWrap.innerHTML = svg;
 
-    // Hover & click listeners
     const sliceEls = canvasWrap.querySelectorAll('.wheel-slice');
     sliceEls.forEach(el => {
       el.addEventListener('mouseenter', () => {
         const idx = parseInt(el.getAttribute('data-index'), 10);
         selectSlice(idx);
+        if (currentStep === 1 || currentStep === 2) {
+          advanceStep(3);
+        }
       });
       el.addEventListener('click', () => {
         const idx = parseInt(el.getAttribute('data-index'), 10);
         selectSlice(idx);
+        advanceStep(4);
       });
     });
+  }
+
+  function advanceStep(targetStep) {
+    if (targetStep) {
+      currentStep = targetStep;
+    } else {
+      currentStep = currentStep < 4 ? currentStep + 1 : 1;
+    }
+    updateStepUI();
+    renderSvgWheel();
   }
 
   function selectSlice(index) {
     activeIndex = index;
     const slice = slices[index];
     if (sliceTitle && sliceDesc) {
-      sliceTitle.innerHTML = `<span>${slice.icon}</span> ${slice.name}`;
+      sliceTitle.innerHTML = `<span>${slice.icon}</span> ${slice.name} <span style="font-size:12px; color:var(--ink-muted);">[Key ${index + 1}]</span>`;
       sliceDesc.textContent = slice.desc;
     }
     renderSvgWheel();
   }
 
-  // Trigger controls
+  if (nextStepBtn) {
+    nextStepBtn.addEventListener('click', () => {
+      advanceStep();
+    });
+  }
+
   triggerBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       triggerBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      selectSlice(0);
+      advanceStep(2);
     });
   });
 
-  // Direct Key 1-9 shortcuts
+  // Key Listeners for Step-by-Step Execution
   document.addEventListener('keydown', (e) => {
     if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+
     const keyNum = parseInt(e.key, 10);
     if (keyNum >= 1 && keyNum <= slices.length) {
       selectSlice(keyNum - 1);
+      advanceStep(3);
     } else if (e.key === 'Escape') {
-      sliceTitle.textContent = 'Wheel Closed (Esc)';
-      sliceDesc.textContent = 'Releasing outside or pressing Esc dismisses the wheel without launching an action.';
+      currentStep = 4;
+      updateStepUI();
+      if (sliceTitle && sliceDesc) {
+        sliceTitle.textContent = 'Wheel Dismissed (Esc)';
+        sliceDesc.textContent = 'Releasing outside or pressing Esc closes the wheel immediately.';
+      }
+      renderSvgWheel();
+    } else if (e.ctrlKey && e.altKey) {
+      advanceStep(2);
     }
   });
 
+  updateStepUI();
   selectSlice(0);
 }
 
