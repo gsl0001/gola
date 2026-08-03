@@ -1,28 +1,30 @@
 <!doctype html>
-<html lang="en" data-theme="midnight">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gola — Radial Launcher & Productivity Suite for Windows</title>
-  <meta name="description" content="Hold Ctrl+Alt, a frosted two-ring radial wheel opens under your cursor. Launch apps, fan out live window previews, access 10 popover tools, and dictate offline on Windows 10/11.">
+  <title>Gola — Radial Launcher for Windows</title>
+  <meta name="description" content="Hold Ctrl+Alt and a frosted two-ring wheel opens under your cursor. Flick to a slice and let go to run it.">
   <link rel="icon" type="image/png" href="assets/icons/favicon.png">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-  <!-- Site Header & Navigation -->
+  <!-- Header -->
   <header class="site-header">
     <div class="container header-wrap">
       <a href="#" class="brand">
         <div class="brand-icon">
-          <svg width="36" height="36" viewBox="0 0 40 40" aria-hidden="true">
+          <svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true">
             <defs>
-              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+              <linearGradient id="brandApertureGrad" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0%" stop-color="#8FDCFF"/>
+                <stop offset="50%" stop-color="#5B6CFF"/>
                 <stop offset="100%" stop-color="#B44BFF"/>
               </linearGradient>
             </defs>
-            <path d="M 32.5 12.8 A 14.4 14.4 0 1 1 20 5.6" fill="none" stroke="url(#g)" stroke-width="8.8" stroke-linecap="round"/>
+            <!-- aperture mark: 300° arc opening at 1 o'clock -->
+            <path d="M25.98 10.24 A11.52 11.52 0 1 1 16.00 4.48" fill="none" stroke="url(#brandApertureGrad)" stroke-width="7.04" stroke-linecap="round"/>
           </svg>
         </div>
         <span>Gola</span>
@@ -34,92 +36,70 @@
         <a href="#features" class="nav-link">Features</a>
         <a href="#faq" class="nav-link">FAQ</a>
       </nav>
-
-      <!-- Theme Switcher Engine -->
-      <div class="theme-switcher" role="radiogroup" aria-label="Color Theme">
-        <button class="theme-btn active" data-theme-set="midnight" aria-label="Midnight theme">Midnight</button>
-        <button class="theme-btn" data-theme-set="graphite" aria-label="Graphite theme">Graphite</button>
-        <button class="theme-btn" data-theme-set="ember" aria-label="Ember theme">Ember</button>
-        <button class="theme-btn" data-theme-set="daylight" aria-label="Daylight theme">Daylight</button>
-      </div>
     </div>
   </header>
 
   <!-- Hero Section -->
   <section class="hero">
     <div class="container">
-      <div class="hero-badge">
-        <span>✨ Windows 10 & 11 Radial Launcher</span>
-      </div>
-      <h1 class="hero-title">One gesture to launch, switch & command</h1>
+      <div class="hero-tag">Radial Launcher for Windows 10 & 11</div>
+      <h1 class="hero-title">Hold Ctrl+Alt and a wheel opens under your cursor</h1>
       <p class="hero-subtitle">
-        Hold <kbd>Ctrl</kbd>+<kbd>Alt</kbd> and a frosted two-ring radial wheel opens directly under your cursor.
-        Flick to a slice and let go to run it. App switching, popover tools, Telegram Shelf, and offline dictation in a single motion.
+        Flick to a slice and let go to run it. App switching, live window fan-out, popover tools, Telegram Shelf, and local offline dictation in one gesture.
       </p>
 
       <div class="hero-actions">
-        <!-- Store placeholder: disabled link until app is published -->
         <a href="https://apps.microsoft.com/detail/9NGHFH4J7JMD" class="btn btn-primary btn-disabled" onclick="alert('Gola will be available on the Microsoft Store shortly! Placeholder link: https://apps.microsoft.com/detail/9NGHFH4J7JMD'); return false;">
-          <span>Get Gola on Microsoft Store</span>
+          <span>Microsoft Store</span>
           <span style="font-size: 12px; opacity: 0.8; font-weight: normal;">(Coming Soon)</span>
         </a>
         <a href="#playground" class="btn btn-secondary">
-          <span>Try Interactive Wheel Demo</span>
+          <span>Try Interactive Wheel</span>
         </a>
       </div>
 
-      <!-- Autoplay Inline Hero Trailer Video -->
+      <!-- Hero Video Trailer -->
       <div class="hero-media">
         <video class="hero-video" autoplay muted loop playsinline poster="assets/screenshots/store-1-wheel.png">
           <source src="assets/trailer/gola-trailer.mp4" type="video/mp4">
-          Your browser does not support inline HTML5 video.
         </video>
       </div>
     </div>
   </section>
 
-  <!-- Interactive Radial Wheel Centerpiece Playground -->
+  <!-- Interactive Wheel Centerpiece -->
   <section id="playground" class="playground-section">
     <div class="container">
       <div class="section-header">
-        <h2>Experience the Gesture Live</h2>
-        <p>Gola turns your entire Windows workflow into a single fluid radial gesture. Interact with the live wheel below to feel hold-flick-release before installing.</p>
+        <h2>Interactive Radial Launcher</h2>
+        <p>The whole product is one gesture. Try the interactive wheel below to experience hold-flick-release.</p>
       </div>
 
       <div class="playground-card">
         <div class="wheel-stage">
           <div id="wheelCanvasWrap" class="wheel-canvas-wrap"></div>
-          <div class="wheel-hint-overlay">Hover slices or press keys <kbd>1</kbd>–<kbd>8</kbd></div>
         </div>
 
         <div class="wheel-info-panel">
-          <div class="wheel-status-badge">
-            <span class="status-dot"></span>
-            <span>Wheel Active — Pointer Under Wheel</span>
-          </div>
-
           <div class="active-slice-card">
             <div id="activeSliceTitle" class="active-slice-title">
-              <span>🌐</span> Google Chrome
+              <span>C</span> Claude
             </div>
             <p id="activeSliceDesc" class="active-slice-desc">
-              3 live windows open. Release to focus main window or slide onto outer fan preview.
+              3 live windows open. Slide onto outer fan previews or release to focus main window.
             </p>
           </div>
 
           <div class="chord-controls">
-            <label style="font-size: 13px; font-weight: 600; color: var(--ink-muted);">Simulate Trigger Chords & Input Methods:</label>
+            <label style="font-size: 13px; font-weight: 600; color: var(--ink-muted);">Trigger Options:</label>
             <button class="chord-trigger-btn active" data-chord="Ctrl+Alt">
-              <span>Hold <kbd>Ctrl</kbd>+<kbd>Alt</kbd> (Default Keyboard Chord)</span>
-              <span style="font-size: 12px; color: var(--accent-color);">Active</span>
+              <span>Hold <kbd>Ctrl</kbd>+<kbd>Alt</kbd> (Default Chord)</span>
             </button>
             <button class="chord-trigger-btn" data-chord="Ctrl+Shift">
-              <span>Hold <kbd>Ctrl</kbd>+<kbd>Shift</kbd> (AltGr Alternative)</span>
-              <span style="font-size: 12px; color: var(--ink-muted);">Select</span>
+              <span>Hold <kbd>Ctrl</kbd>+<kbd>Shift</kbd> (AltGr Layouts)</span>
             </button>
             <button class="chord-trigger-btn" data-chord="Mouse">
-              <span>Mouse Thumb / Wheel Toggle (Back / Forward / Middle)</span>
-              <span style="font-size: 12px; color: var(--ink-muted);">Select</span>
+              <span>Mouse / Trackpad (Back, Forward, Middle)</span>
             </button>
           </div>
         </div>
@@ -127,12 +107,12 @@
     </div>
   </section>
 
-  <!-- Step-by-Step Guided 5-Minute Tutorial -->
+  <!-- Stepped Tutorial -->
   <section id="tutorial" class="tutorial-section">
     <div class="container">
       <div class="section-header">
-        <h2>The 5-Minute Guided Tutorial</h2>
-        <p>Mastering Gola takes about five seconds. Here is how the radial launcher works on your desktop.</p>
+        <h2>First Five Minutes</h2>
+        <p>Five steps to master the gesture.</p>
       </div>
 
       <div class="tutorial-steps">
@@ -140,31 +120,31 @@
           <div class="step-number">1</div>
           <div class="step-content">
             <h3>Hold the Chord</h3>
-            <p>Hold <strong><kbd>Ctrl</kbd>+<kbd>Alt</kbd></strong> (or your chosen mouse trigger). A frosted two-ring radial wheel opens immediately centered right under your mouse pointer.</p>
+            <p>Hold <strong><kbd>Ctrl</kbd>+<kbd>Alt</kbd></strong> (or your configured mouse button). The wheel opens immediately centered under your mouse cursor.</p>
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-number">2</div>
           <div class="step-content">
-            <h3>Slide Toward a Slice</h3>
-            <p>The <strong>inner ring</strong> holds your curated apps alongside three sections: <strong>System</strong>, <strong>Tools</strong>, and <strong>Shelf</strong>. Green dots and numbers indicate running application instances.</p>
+            <h3>Slide to a Slice</h3>
+            <p>The inner ring holds your curated apps plus <strong>System</strong>, <strong>Tools</strong>, and <strong>Shelf</strong>. Green dots and numbers show open instances.</p>
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-number">3</div>
           <div class="step-content">
-            <h3>Outer Ring Fan Out & Release</h3>
-            <p>Dwell for a split second on an app slice with multiple windows open to fan out real live thumbnail previews on the <strong>outer ring</strong>. Slide onto a specific preview and release to focus it, or release outside to cancel.</p>
+            <h3>Outer Ring Fan & Release</h3>
+            <p>Dwell on an app slice with multiple windows open to fan out live window previews. Slide onto a preview and let go to focus it.</p>
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-number">4</div>
           <div class="step-content">
-            <h3>Direct Key Shortcuts & Mouse Toggles</h3>
-            <p>While the wheel is open, press <strong><kbd>1</kbd>–<kbd>9</kbd></strong> to select a slice directly, or press <strong><kbd>Esc</kbd></strong> to close. Mouse Back, Forward, and Middle wheel buttons act as toggles — hold and flick, or tap to lock open.</p>
+            <h3>Shortcuts & Dismiss</h3>
+            <p>Press <strong><kbd>1</kbd>–<kbd>9</kbd></strong> to select a slice directly. Press <strong><kbd>Esc</kbd></strong> or release outside to close the wheel.</p>
           </div>
         </div>
 
@@ -172,175 +152,143 @@
           <div class="step-number">5</div>
           <div class="step-content">
             <h3>Local Dictation & Telegram Shelf</h3>
-            <p>Focus any text field, hold the trigger chord, and speak — Gola transcribes your speech locally using an offline 141 MB speech model. Send files from your phone directly to your desktop via your own Telegram bot.</p>
+            <p>Focus a text field, hold the chord, and speak — Gola types locally using an offline 141 MB speech model. Send files from your phone via your own Telegram bot.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Deep Dive Features Section -->
+  <!-- Features Grid -->
   <section id="features" class="features-section">
     <div class="container">
       <div class="section-header">
-        <h2>Built for Speed, Designed for Windows</h2>
-        <p>Every feature in Gola is designed to keep your hands in flow and your desktop clutter-free.</p>
+        <h2>Launcher Features</h2>
+        <p>Real screenshots captured from the app.</p>
       </div>
 
       <div class="grid-3">
         <div class="feature-card">
           <div class="feature-icon">🪟</div>
           <h3>Live Window Fan Out</h3>
-          <p>App slices behave intelligently like taskbar buttons: launching if closed, bringing to front if single, and fanning out live thumbnail previews when multiple windows exist.</p>
+          <p>App slices behave like taskbar buttons: not running launches, one focuses, several fan out as live previews on the outer ring.</p>
           <img src="assets/screenshots/store-3-files-fan.png" alt="Live window previews fanned out on the outer ring">
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">🛠️</div>
-          <h3>10 Built-In Popover Tools</h3>
-          <p>Timer, calculator, colour picker, clipboard history, magnifier, screenshot, quick note, caffeine, focus dim, and dictate. They open as floating popovers that can be pinned.</p>
-          <img src="assets/screenshots/store-5-tools-fan.png" alt="Tools fan out showing ten built-in utility tools">
+          <h3>10 Tools Popovers</h3>
+          <p>Timer, calculator, colour picker, clipboard history, magnifier, screenshot, quick note, caffeine, focus dim, and dictate. They open as popovers and can be pinned.</p>
+          <img src="assets/screenshots/store-5-tools-fan.png" alt="Tools section fan out showing ten utilities">
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">⚙️</div>
-          <h3>System Control & Keymaps</h3>
-          <p>Instant access to Settings, Task Manager, Wi-Fi, Volume, Sleep, and Lock. Customize keymaps, chord modifiers, and choose between 5 wheel sizes (S, S+, M, L, XL).</p>
-          <img src="assets/screenshots/store-6-system-fan.png" alt="System section fan out showing Windows controls">
+          <h3>System & Keymap Controls</h3>
+          <p>Settings, Task Manager, Wi-Fi, Volume, Sleep, and Lock. Change keymaps, chord modifiers, and select from 5 wheel sizes (S, S+, M, L, XL).</p>
+          <img src="assets/screenshots/store-6-system-fan.png" alt="System section fan out">
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">📥</div>
-          <h3>The 7-Day Telegram Shelf</h3>
-          <p>A 7-day inbox of recent files with live preview, instant search, and archiving. Connect your personal Telegram bot (@BotFather `/newbot`) to send files from your phone to PC.</p>
+          <h3>Telegram Shelf</h3>
+          <p>A seven-day inbox of recent files with preview, search and archive. Fed from your phone via your own Telegram bot (@BotFather <code>/newbot</code>).</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">🎙️</div>
-          <h3>100% Offline Dictation</h3>
-          <p>Dictation ships <strong>OFF</strong> by default. Turn it on in setup or Settings → Voice. Recognition runs entirely on your CPU/GPU offline. Downloads a 141 MB speech model once; zero cloud connections after.</p>
+          <h3>Local Dictation</h3>
+          <p>Dictation ships <strong>OFF</strong>. Turn it on in setup or Settings → Voice. Speech recognition runs on your machine. Downloads a 141 MB model once; works 100% offline.</p>
         </div>
 
         <div class="feature-card">
           <div class="feature-icon">🎨</div>
-          <h3>4 Curated Desktop Themes</h3>
-          <p>Switch seamlessly between Midnight, Graphite, Ember, and Daylight to match your Windows setup and personal aesthetic preferences.</p>
-          <img src="assets/screenshots/store-7-settings.png" alt="Gola Settings window with theme controls">
+          <h3>Settings & Themes</h3>
+          <p>Pure dark theme by default, matching Windows aesthetics and custom keymap configurations.</p>
+          <img src="assets/screenshots/store-7-settings.png" alt="Gola Settings window">
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Complete FAQ & Troubleshooting Section -->
+  <!-- FAQ Section -->
   <section id="faq" class="faq-section">
     <div class="container">
       <div class="section-header">
-        <h2>Frequently Asked Questions</h2>
-        <p>Everything you need to know about Gola's architecture, security, privacy, and customization.</p>
+        <h2>Common Questions</h2>
+        <p>Everything you need to know about Gola.</p>
       </div>
 
       <div class="faq-search-box">
-        <input type="text" id="faqSearchInput" class="faq-search-input" placeholder="Search questions (e.g. spyware, antivirus, AltGr, mouse, trackpad)..." aria-label="Search FAQ">
+        <input type="text" id="faqSearchInput" class="faq-search-input" placeholder="Search FAQ (spyware, antivirus, AltGr, mouse, trackpad, data)..." aria-label="Search FAQ">
       </div>
 
       <div class="faq-list">
-        <!-- Preserved original FAQ 1: Spyware -->
         <div class="faq-item">
           <div class="faq-question">
             <span>Is Gola spyware?</span>
             <span class="faq-chevron">▼</span>
           </div>
           <div class="faq-answer">
-            <p><strong>No.</strong> Gola installs a low-level system keyboard hook, captures screen content for radial previews, and opens the microphone for dictation. Here is exactly why each is required:</p>
-            <ul style="padding-left:20px; color: var(--ink-secondary);">
-              <li><strong>Keyboard Hook:</strong> It is the only way Windows allows an application to detect a modifier key being <em>held and released</em>. Keypresses are compared against your trigger chord and passed straight on—they are never recorded or transmitted.</li>
-              <li><strong>Screen Capture:</strong> Used solely to render the frosted glass backdrop and live window thumbnail previews on your machine.</li>
-              <li><strong>Microphone:</strong> Opens only while you actively dictate text into a field. Speech recognition runs 100% locally.</li>
-            </ul>
-            <p>There is no account, no telemetry, no analytics, and no remote servers. For full details, review our <a href="https://gist.github.com/gsl0001/0c2ba872f82c192507a5e0ded852b368" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+            <p><strong>No.</strong> It installs a system-wide keyboard hook (the only way Windows detects a key being <em>held and released</em>), captures screen content for radial previews, and opens the microphone for dictation.</p>
+            <p>Keystrokes are compared against your trigger chord and passed straight on, never recorded or transmitted. Screen capture stays local. Microphone opens only while dictating. No account, no telemetry, no servers. Detail in the <a href="https://gist.github.com/gsl0001/0c2ba872f82c192507a5e0ded852b368" target="_blank" rel="noopener">Privacy Policy</a>.</p>
           </div>
         </div>
 
-        <!-- Preserved original FAQ 2: Antivirus false positives -->
         <div class="faq-item">
           <div class="faq-question">
-            <span>Why did my antivirus flag Gola?</span>
+            <span>Why did my antivirus flag it?</span>
             <span class="faq-chevron">▼</span>
           </div>
           <div class="faq-answer">
-            <p>Keyboard hooks, screen capturing, and launching user-configured shell commands together match heuristic security detection patterns used by antivirus scanners. False positives happen even though every one of these features is essential for Gola to function as a launcher. The Microsoft Store build is digitally signed by Microsoft. If your security software flags it, reporting it as a false positive helps the community.</p>
+            <p>Keyboard hooks, screen capture, and running configured commands together match heuristic antivirus detection patterns. False positives happen even though every one of those is required for the launcher to work. The Store build is signed by Microsoft.</p>
           </div>
         </div>
 
-        <!-- Preserved original FAQ 3: Wheel does nothing / AltGr collision -->
         <div class="faq-item">
           <div class="faq-question">
             <span>The wheel does nothing when I hold the chord</span>
             <span class="faq-chevron">▼</span>
           </div>
           <div class="faq-answer">
-            <p>This is almost always a trigger conflict. On keyboard layouts that use <strong>AltGr</strong> (which Windows internally reports as <kbd>Ctrl</kbd>+<kbd>Alt</kbd>), the default chord collides with normal typing. Open Gola Settings → Keymap and change the trigger chord to <strong><kbd>Ctrl</kbd>+<kbd>Shift</kbd></strong>.</p>
+            <p>Almost always a trigger conflict. On keyboard layouts that use <strong>AltGr</strong> (which Windows reports as Ctrl+Alt), the default chord collides with typing. Change it in Settings → Keymap to <kbd>Ctrl</kbd>+<kbd>Shift</kbd>.</p>
           </div>
         </div>
 
-        <!-- Preserved original FAQ 4: Mouse & Trackpad triggering -->
         <div class="faq-item">
           <div class="faq-question">
-            <span>How do I open Gola with a mouse or laptop trackpad?</span>
+            <span>Opening it with the mouse, or a laptop trackpad</span>
             <span class="faq-chevron">▼</span>
           </div>
           <div class="faq-answer">
-            <p>In Settings → Keymap, you can enable any combination of <strong>Back</strong>, <strong>Forward</strong>, and <strong>Middle</strong> mouse buttons as triggers. They are independent toggles, so hold and flick as usual, or <em>tap</em> to keep the wheel open for a click.</p>
-            <p><strong>Laptop Trackpad Setup:</strong> Choose <em>Middle</em> in Gola Settings, then in Windows Settings → Bluetooth & devices → Touchpad → Three-finger gestures, set <strong>Taps</strong> to "Middle mouse button". Windows sends three-finger taps as middle clicks, triggering Gola.</p>
-            <p><em>Note:</em> Gola claims its assigned trigger buttons, so a thumb button will stop browser back/forward while active. If using mouse configuration software (e.g. Logitech Options+), leave the button set to default Back/Forward there so raw hardware inputs reach Gola.</p>
+            <p>Settings → Keymap lets you pick any combination of <strong>Back</strong>, <strong>Forward</strong>, and <strong>Middle</strong> buttons. They are toggles — hold and flick, or tap to keep the wheel open for a click.</p>
+            <p><strong>Trackpad:</strong> Choose Middle, then in Windows Settings → Bluetooth & devices → Touchpad → Three-finger gestures set Taps to "Middle mouse button".</p>
           </div>
         </div>
 
-        <!-- Preserved original FAQ 5: Data locations -->
         <div class="faq-item">
           <div class="faq-question">
             <span>Where does Gola keep my data?</span>
             <span class="faq-chevron">▼</span>
           </div>
           <div class="faq-answer">
-            <p>All configuration and local files are stored locally on your machine:</p>
-            <ul style="padding-left:20px; color: var(--ink-secondary);">
-              <li><code>%APPDATA%\Gola\</code> — App settings & keymap configuration</li>
-              <li><code>%USERPROFILE%\Gola\</code> — Screenshots, quick notes, Shelf inbox files, and the offline speech recognition model.</li>
-            </ul>
-            <p>Uninstalling Gola removes the app binary; deleting those two folders completely purges all associated data.</p>
-          </div>
-        </div>
-
-        <!-- New FAQ: Privacy & Connections -->
-        <div class="faq-item">
-          <div class="faq-question">
-            <span>What outbound network connections does Gola make?</span>
-            <span class="faq-chevron">▼</span>
-          </div>
-          <div class="faq-answer">
-            <p>Gola makes exactly two possible outbound network connections:</p>
-            <ol style="padding-left:20px; color: var(--ink-secondary);">
-              <li>The one-off download of the ~141 MB local speech recognition model (only when Dictation is enabled).</li>
-              <li>Requests to <code>api.telegram.org</code> <strong>only</strong> if you explicitly supply your own Telegram bot token to connect your mobile Shelf.</li>
-            </ol>
-            <p>Clipboard history is stored strictly in volatile RAM (last 20 items, never written to disk), and content marked by password managers as excluded is automatically skipped.</p>
+            <p><code>%APPDATA%\Gola\</code> for settings, and <code>%USERPROFILE%\Gola\</code> for screenshots, notes, Shelf files, and the speech model.</p>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Site Footer -->
+  <!-- Footer -->
   <footer class="site-footer">
     <div class="container footer-grid">
       <div>
-        <p style="margin:0; font-weight:600; color: var(--ink-primary);">Gola — Radial Launcher for Windows</p>
-        <p style="margin:4px 0 0; font-size:13px; color: var(--ink-muted);">Built with C# .NET 8 & WPF. Packaged for Microsoft Store.</p>
+        <p style="margin:0; font-weight:600; color: var(--ink-primary);">Gola — radial launcher for Windows</p>
+        <p style="margin:4px 0 0; font-size:13px; color: var(--ink-muted);">Built with C# .NET 8 & WPF. Packaged as MSIX.</p>
       </div>
 
       <div style="display:flex; gap:20px; font-size:14px;">
-        <a href="mailto:gsl456789@gmail.com">Support (gsl456789@gmail.com)</a>
+        <a href="mailto:gsl456789@gmail.com">gsl456789@gmail.com</a>
         <a href="https://gist.github.com/gsl0001/0c2ba872f82c192507a5e0ded852b368" target="_blank" rel="noopener">Privacy Policy</a>
       </div>
     </div>
