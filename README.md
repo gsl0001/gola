@@ -3,24 +3,22 @@
 One static page — `index.html`. No generator, no build step, no dependencies: it answers
 setup and the handful of questions this app actually attracts, and that is all it needs to do.
 
-## Publishing it
+## Published at
 
-The page must end up at **https://gsl0001.github.io/gola/**, because `Config.SiteUrl` points
-there and Settings → About links to it.
+**https://gsl0001.github.io/gola/** — repo `gsl0001/gola`, Pages serving `main` at root.
+`Config.SiteUrl` points there and Settings → About links to it, so the URL is fixed.
 
 Do **not** publish this repository. It carries `launch-review/` and `design/`, which hold
-competitive and trademark analysis. Publish only the contents of this folder:
+competitive and trademark analysis. Only this folder's contents are public.
+
+To update the live site, copy the changed files across and push:
 
 ```
-gh repo create gola --public --description "Gola - a radial launcher for Windows"
-cd site && git init && git add . && git commit -m "Help site"
-git branch -M main
-git remote add origin https://github.com/gsl0001/gola.git
-git push -u origin main
+cp site/index.html site/README.md <clone of gsl0001/gola>/
+cd <clone> && git commit -am "Update help site" && git push
 ```
 
-Then in the new repo: **Settings → Pages → Source: deploy from branch, `main`, `/ (root)`**.
-It goes live at the URL above within a minute or two.
+Pages rebuilds in a minute or so.
 
 ## Keeping it honest
 
