@@ -4,11 +4,150 @@
  * Interactive Step-by-Step Guided Gesture State Machine
  */
 
+/**
+ * Waitlist delivery. Point this at anything that accepts a POST of {email}
+ * — Formspree, Getform, a Cloudflare Worker — and signups go straight there.
+ * Left empty, the form opens a prefilled email instead, which needs no backend.
+ */
+const WAITLIST_ENDPOINT = '';
+const WAITLIST_MAILTO = 'gsl456789@gmail.com';
+
 document.addEventListener('DOMContentLoaded', () => {
   initStepByStepRadialLauncher();
   initFaqSearch();
   initAccordion();
+  initVideoPerformanceObserver();
+  initClipLightbox();
+  initWaitlist();
 });
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function initVideoPerformanceObserver() {
+  const videos = document.querySelectorAll('video[loop]:not(#lightboxVideo)');
+  if (!videos.length) return;
+
+  // Motion-sensitive visitors get the poster and a play button instead of a loop.
+  if (prefersReducedMotion()) {
+    videos.forEach(v => { v.controls = true; });
+    return;
+  }
+  if (!('IntersectionObserver' in window)) {
+    videos.forEach(v => v.play().catch(() => {}));
+    return;
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.play().catch(() => {});
+      } else {
+        entry.target.pause();
+      }
+    });
+  }, { threshold: 0.2 });
+
+  videos.forEach(v => observer.observe(v));
+}
+
+function initClipLightbox() {
+  const box = document.getElementById('clipLightbox');
+  const video = document.getElementById('lightboxVideo');
+  const caption = document.getElementById('lightboxCaption');
+  const closeBtn = document.getElementById('lightboxClose');
+  const frames = document.querySelectorAll('.clip-frame');
+  if (!box || !video || !frames.length) return;
+
+  let lastFocused = null;
+
+  function openClip(src, text) {
+    if (!src) return;
+    lastFocused = document.activeElement;
+    video.src = src;
+    caption.textContent = text || '';
+    box.hidden = false;
+    document.body.style.overflow = 'hidden';
+    if (!prefersReducedMotion()) video.play().catch(() => {});
+    closeBtn.focus();
+  }
+
+  function closeClip() {
+    box.hidden = true;
+    video.pause();
+    video.removeAttribute('src');
+    video.load();
+    document.body.style.overflow = '';
+    if (lastFocused) lastFocused.focus();
+  }
+
+  frames.forEach(frame => {
+    frame.addEventListener('click', () => openClip(frame.dataset.src, frame.dataset.caption));
+  });
+
+  closeBtn.addEventListener('click', closeClip);
+  box.addEventListener('click', (e) => { if (e.target === box) closeClip(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !box.hidden) closeClip();
+  });
+}
+
+function initWaitlist() {
+  const form = document.getElementById('waitlistForm');
+  if (!form) return;
+
+  const input = document.getElementById('waitlistEmail');
+  const status = document.getElementById('waitlistStatus');
+  const submit = form.querySelector('.waitlist-submit');
+
+  function say(message, kind) {
+    status.textContent = message;
+    status.className = 'waitlist-status' + (kind ? ' ' + kind : '');
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = input.value.trim();
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      input.classList.add('invalid');
+      say('That does not look like an email address.', 'error');
+      input.focus();
+      return;
+    }
+    input.classList.remove('invalid');
+
+    if (!WAITLIST_ENDPOINT) {
+      // No backend wired up: hand off to the mail client, and name the address
+      // in plain text so the visitor is never stuck if nothing opens.
+      say('Opening your mail app — send the draft and you are on the list. ' +
+          'If nothing opens, email ' + WAITLIST_MAILTO + ' instead.');
+      window.location.href = 'mailto:' + WAITLIST_MAILTO +
+        '?subject=' + encodeURIComponent('Gola waitlist') +
+        '&body=' + encodeURIComponent('Please add ' + email + ' to the Gola waitlist.');
+      return;
+    }
+
+    submit.disabled = true;
+    say('Adding you…');
+
+    fetch(WAITLIST_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email: email })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        form.reset();
+        say('You are on the list. One email when it ships.', 'ok');
+      })
+      .catch(() => {
+        say('That did not go through. Email ' + WAITLIST_MAILTO + ' and you will be added by hand.', 'error');
+      })
+      .then(() => { submit.disabled = false; });
+  });
+}
 
 function initStepByStepRadialLauncher() {
   const canvasWrap = document.getElementById('wheelCanvasWrap');
@@ -39,29 +178,50 @@ function initStepByStepRadialLauncher() {
   const triggerBtns = document.querySelectorAll('.chord-trigger-btn');
   const nextStepBtn = document.getElementById('nextStepBtn');
 
+  const syncVideo = document.getElementById('playgroundSyncVideo');
+  const syncVideoSource = document.getElementById('playgroundSyncVideoSource');
+  const stepClipTitle = document.getElementById('stepClipTitle');
+
+  const stepClipMap = {
+    1: { title: 'Wheel opens under the cursor', clip: 'summon-wheel' },
+    2: { title: 'Tools ring fans out', clip: 'tools-popovers' },
+    3: { title: 'Live windows on the outer ring', clip: 'window-fanout' },
+    4: { title: 'System actions, then release', clip: 'system-fanout' }
+  };
+
   function updateStepUI() {
     if (!stepBadge || !stepPrompt) return;
 
     if (currentStep === 1) {
-      stepBadge.textContent = 'Step 1 of 4 — Summon Wheel';
-      stepPrompt.innerHTML = 'Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd> (or click a trigger below) to open the launcher wheel under your cursor.';
+      stepBadge.textContent = 'Step 1 of 4 — Summon';
+      stepPrompt.innerHTML = 'Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>, or click a trigger below, to open the wheel under your cursor.';
     } else if (currentStep === 2) {
-      stepBadge.textContent = 'Step 2 of 4 — Target Slice';
-      stepPrompt.innerHTML = 'Press key <kbd>1</kbd>–<kbd>8</kbd> or hover over a slice to target an app or section.';
+      stepBadge.textContent = 'Step 2 of 4 — Target a slice';
+      stepPrompt.innerHTML = 'Press <kbd>1</kbd>–<kbd>9</kbd>, or hover a slice, to target an app or a section.';
     } else if (currentStep === 3) {
-      stepBadge.textContent = 'Step 3 of 4 — Outer Fan Out';
-      stepPrompt.innerHTML = 'Dwell on the slice to fan out live window previews on the outer ring.';
+      stepBadge.textContent = 'Step 3 of 4 — Fan out';
+      stepPrompt.innerHTML = 'Dwell on the slice and its windows or actions fan onto the outer ring.';
     } else if (currentStep === 4) {
-      stepBadge.textContent = 'Step 4 of 4 — Execute / Dismiss';
-      stepPrompt.innerHTML = 'Press key <kbd>1</kbd>–<kbd>3</kbd> to focus a window, or press <kbd>Esc</kbd> / click outside to dismiss.';
+      stepBadge.textContent = 'Step 4 of 4 — Run or dismiss';
+      stepPrompt.innerHTML = 'Release on an outer item to run it, or press <kbd>Esc</kbd> to close the wheel.';
+    }
+
+    if (syncVideo && syncVideoSource && stepClipMap[currentStep]) {
+      const clipInfo = stepClipMap[currentStep];
+      const src = `assets/clips/${clipInfo.clip}.mp4`;
+      if (stepClipTitle) stepClipTitle.textContent = clipInfo.title;
+      if (syncVideoSource.getAttribute('src') !== src) {
+        syncVideo.poster = `assets/clips/${clipInfo.clip}.jpg`;
+        syncVideoSource.setAttribute('src', src);
+        syncVideo.load();
+        if (!prefersReducedMotion()) syncVideo.play().catch(() => {});
+      }
     }
 
     if (nextStepBtn) {
-      if (currentStep < 4) {
-        nextStepBtn.textContent = `Next Step (${currentStep + 1}/4) ➔`;
-      } else {
-        nextStepBtn.textContent = 'Restart Guided Flow ↺';
-      }
+      nextStepBtn.textContent = currentStep < 4
+        ? `Next step (${currentStep + 1}/4)`
+        : 'Restart the flow';
     }
   }
 
@@ -259,6 +419,10 @@ function initStepByStepRadialLauncher() {
   document.addEventListener('keydown', (e) => {
     if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
 
+    // While a clip is open in the lightbox, keys belong to the lightbox.
+    const lightbox = document.getElementById('clipLightbox');
+    if (lightbox && !lightbox.hidden) return;
+
     const keyNum = parseInt(e.key, 10);
     if (keyNum >= 1 && keyNum <= slices.length) {
       selectSlice(keyNum - 1);
@@ -305,15 +469,25 @@ function initFaqSearch() {
 function initAccordion() {
   const faqQuestions = document.querySelectorAll('.faq-question');
 
+  function toggle(q) {
+    const parent = q.parentElement;
+    const isOpen = parent.classList.contains('open');
+
+    document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('open'));
+
+    if (!isOpen) {
+      parent.classList.add('open');
+    }
+    q.setAttribute('aria-expanded', String(!isOpen));
+  }
+
   faqQuestions.forEach(q => {
-    q.addEventListener('click', () => {
-      const parent = q.parentElement;
-      const isOpen = parent.classList.contains('open');
-
-      document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('open'));
-
-      if (!isOpen) {
-        parent.classList.add('open');
+    q.setAttribute('aria-expanded', 'false');
+    q.addEventListener('click', () => toggle(q));
+    q.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggle(q);
       }
     });
   });
