@@ -185,17 +185,6 @@ function initStepByStepRadialLauncher() {
   const triggerBtns = document.querySelectorAll('.chord-trigger-btn');
   const nextStepBtn = document.getElementById('nextStepBtn');
 
-  const syncVideo = document.getElementById('playgroundSyncVideo');
-  const syncVideoSource = document.getElementById('playgroundSyncVideoSource');
-  const stepClipTitle = document.getElementById('stepClipTitle');
-
-  const stepClipMap = {
-    1: { title: 'Wheel opens under the cursor', clip: 'summon-wheel' },
-    2: { title: 'Tools ring fans out', clip: 'tools-popovers' },
-    3: { title: 'Live windows on the outer ring', clip: 'window-fanout' },
-    4: { title: 'System actions, then release', clip: 'system-fanout' }
-  };
-
   function updateStepUI() {
     if (!stepBadge || !stepPrompt) return;
 
@@ -211,18 +200,6 @@ function initStepByStepRadialLauncher() {
     } else if (currentStep === 4) {
       stepBadge.textContent = 'Step 4 of 4 — Run or dismiss';
       stepPrompt.innerHTML = 'Release on an outer item to run it, or press <kbd>Esc</kbd> to close the wheel.';
-    }
-
-    if (syncVideo && syncVideoSource && stepClipMap[currentStep]) {
-      const clipInfo = stepClipMap[currentStep];
-      const src = `assets/clips/${clipInfo.clip}.mp4`;
-      if (stepClipTitle) stepClipTitle.textContent = clipInfo.title;
-      if (syncVideoSource.getAttribute('src') !== src) {
-        syncVideo.poster = `assets/clips/${clipInfo.clip}.jpg`;
-        syncVideoSource.setAttribute('src', src);
-        syncVideo.load();
-        if (!prefersReducedMotion()) syncVideo.play().catch(() => {});
-      }
     }
 
     if (nextStepBtn) {

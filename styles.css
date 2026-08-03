@@ -422,34 +422,8 @@ nav.main-nav {
   line-height: 1.5;
 }
 
-.step-clip-preview-wrap {
-  background: var(--surface-base);
-  border: 1px solid var(--border-line);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  margin: 0;
-}
-
-.step-clip-header {
-  padding: 8px 14px;
-  background: rgba(0, 0, 0, 0.4);
-  border-bottom: 1px solid var(--border-line);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink-muted);
-}
-.step-clip-header span:last-child { color: var(--accent-color); text-align: right; }
-
-.step-clip-video {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  display: block;
-}
+/* The playground panel is the interactive wheel only — the recordings live
+   in one place, further up the page. */
 
 /* Icon Inventory Section */
 .icon-inventory-grid {
@@ -536,14 +510,7 @@ nav.main-nav {
   max-width: 640px;
 }
 
-.step-media { margin-bottom: 0; }
-
-.step-video {
-  width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  display: block;
-}
+.step-content p:last-child { margin-bottom: 0; }
 
 /* Features & Clips Grid */
 .features-section {
