@@ -66,10 +66,17 @@ function initClipLightbox() {
     if (!src) return;
     lastFocused = document.activeElement;
     video.src = src;
+    video.load();
     caption.textContent = text || '';
     box.hidden = false;
     document.body.style.overflow = 'hidden';
-    if (!prefersReducedMotion()) video.play().catch(() => {});
+
+    // Playing before the new source is ready loses the race against load().
+    if (!prefersReducedMotion()) {
+      const start = () => video.play().catch(() => {});
+      if (video.readyState >= 2) start();
+      else video.addEventListener('loadeddata', start, { once: true });
+    }
     closeBtn.focus();
   }
 
