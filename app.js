@@ -9,7 +9,7 @@
  * — Formspree, Getform, a Cloudflare Worker — and signups go straight there.
  * Left empty, the form opens a prefilled email instead, which needs no backend.
  */
-const WAITLIST_ENDPOINT = '';
+const WAITLIST_ENDPOINT = 'https://formspree.io/f/mykrrjad';
 const WAITLIST_MAILTO = 'gsl456789@gmail.com';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -142,7 +142,8 @@ function initWaitlist() {
     fetch(WAITLIST_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ email: email })
+      // _subject is a Formspree convention — it titles the notification email.
+      body: JSON.stringify({ email: email, _subject: 'Gola waitlist signup' })
     })
       .then(res => {
         if (!res.ok) throw new Error('HTTP ' + res.status);
