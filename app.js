@@ -1,479 +1,712 @@
-/**
- * Ball / Gola Launcher Web Engine
- * Direct implementation of design/Ball - UI Reference.dc.html (Section 4a)
- * Interactive Step-by-Step Guided Gesture State Machine
- */
+/* ═══════════════════════════════════════════════════════════════════════
+   Gola — site behaviour
 
-/**
- * Waitlist delivery. Point this at anything that accepts a POST of {email}
- * — Formspree, Getform, a Cloudflare Worker — and signups go straight there.
- * Left empty, the form opens a prefilled email instead, which needs no backend.
- */
+   The wheel below is drawn to the shipping GeometryConfig defaults, and the
+   four themes are the exact twelve-key blocks from the brand document. Both
+   are single sources of truth: change a number here only when it changes in
+   the app.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Waitlist delivery. Point this at anything that accepts a POST of {email}.
+   Blank it and the form opens a prefilled email instead, needing no backend. */
 const WAITLIST_ENDPOINT = 'https://formspree.io/f/mykrrjad';
 const WAITLIST_MAILTO = 'gsl456789@gmail.com';
 
-document.addEventListener('DOMContentLoaded', () => {
-  initStepByStepRadialLauncher();
-  initFaqSearch();
-  initAccordion();
-  initVideoPerformanceObserver();
-  initClipLightbox();
-  initWaitlist();
-});
+/* ── Themes — config.json "theme" blocks, verbatim ──────────────────── */
 
-function prefersReducedMotion() {
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-function initVideoPerformanceObserver() {
-  const videos = document.querySelectorAll('video[loop]:not(#lightboxVideo)');
-  if (!videos.length) return;
-
-  // Motion-sensitive visitors get the poster and a play button instead of a loop.
-  if (prefersReducedMotion()) {
-    videos.forEach(v => { v.controls = true; });
-    return;
-  }
-  if (!('IntersectionObserver' in window)) {
-    videos.forEach(v => v.play().catch(() => {}));
-    return;
-  }
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.play().catch(() => {});
-      } else {
-        entry.target.pause();
-      }
-    });
-  }, { threshold: 0.2 });
-
-  videos.forEach(v => observer.observe(v));
-}
-
-function initClipLightbox() {
-  const box = document.getElementById('clipLightbox');
-  const video = document.getElementById('lightboxVideo');
-  const caption = document.getElementById('lightboxCaption');
-  const closeBtn = document.getElementById('lightboxClose');
-  const frames = document.querySelectorAll('.clip-frame');
-  if (!box || !video || !frames.length) return;
-
-  let lastFocused = null;
-
-  function openClip(src, text) {
-    if (!src) return;
-    lastFocused = document.activeElement;
-    video.src = src;
-    video.load();
-    caption.textContent = text || '';
-    box.hidden = false;
-    document.body.style.overflow = 'hidden';
-
-    // Playing before the new source is ready loses the race against load().
-    if (!prefersReducedMotion()) {
-      const start = () => video.play().catch(() => {});
-      if (video.readyState >= 2) start();
-      else video.addEventListener('loadeddata', start, { once: true });
+const THEMES = [
+  {
+    id: 'midnight',
+    name: 'Midnight',
+    tag: 'shipped default',
+    desc: 'Near-black glass, periwinkle highlight. Reads over dark and busy wallpapers alike.',
+    keys: {
+      slice: '#26FFFFFF', sliceHot: '#726E86FF', edge: '#45FFFFFF', edgeHot: '#CCAEBBFF',
+      ink: '#FFFFFFFF', inkDim: '#FFB4B4C6', hub: '#D808080D', tint: '#9C08080E',
+      accent: '#FF6E86FF', running: '#FF4AE38B', shell: '#FF0E0E14', card: '#FF15151C'
     }
-    closeBtn.focus();
+  },
+  {
+    id: 'graphite',
+    name: 'Graphite',
+    tag: 'no hue at all',
+    desc: 'For anyone who finds the blue loud. The only colour left is the running dot, which is the point of it.',
+    keys: {
+      slice: '#26FFFFFF', sliceHot: '#6AC9CEDA', edge: '#45FFFFFF', edgeHot: '#CCE4E7EE',
+      ink: '#FFFFFFFF', inkDim: '#FFA9AEB8', hub: '#D80B0B0C', tint: '#9C0A0A0B',
+      accent: '#FFC9CEDA', running: '#FF7FD8A4', shell: '#FF101011', card: '#FF17171A'
+    }
+  },
+  {
+    id: 'ember',
+    name: 'Ember',
+    tag: 'warm, low blue',
+    desc: 'Same structure, warm end of the spectrum. Pairs with the amber the Focus dim card already uses.',
+    keys: {
+      slice: '#26FFFFFF', sliceHot: '#70FF8A5B', edge: '#45FFFFFF', edgeHot: '#CCFFC3A6',
+      ink: '#FFFFFFFF', inkDim: '#FFC6B4AC', hub: '#D8120C08', tint: '#9C120C08',
+      accent: '#FFFF8A5B', running: '#FFF5C55A', shell: '#FF141010', card: '#FF1C1614'
+    }
+  },
+  {
+    id: 'daylight',
+    name: 'Daylight',
+    tag: 'light glass',
+    desc: 'Inverts the whole model: dark ink, white tint over the capture, wedges cut in black. Needs a light wallpaper.',
+    keys: {
+      slice: '#1F000000', sliceHot: '#5C6E86FF', edge: '#30000000', edgeHot: '#CC3B57E8',
+      ink: '#FF12121A', inkDim: '#FF5A5F72', hub: '#E8F7F8FC', tint: '#78FFFFFF',
+      accent: '#FF3B57E8', running: '#FF16A34A', shell: '#FFF4F5F9', card: '#FFFFFFFF'
+    }
   }
+];
 
-  function closeClip() {
-    box.hidden = true;
-    video.pause();
-    video.removeAttribute('src');
-    video.load();
-    document.body.style.overflow = '';
-    if (lastFocused) lastFocused.focus();
+/* Windows stores colours as #AARRGGBB. */
+function argb(hex) {
+  const h = hex.replace('#', '');
+  if (h.length === 8) {
+    return {
+      a: parseInt(h.slice(0, 2), 16) / 255,
+      r: parseInt(h.slice(2, 4), 16),
+      g: parseInt(h.slice(4, 6), 16),
+      b: parseInt(h.slice(6, 8), 16)
+    };
   }
+  return { a: 1, r: parseInt(h.slice(0, 2), 16), g: parseInt(h.slice(2, 4), 16), b: parseInt(h.slice(4, 6), 16) };
+}
 
-  frames.forEach(frame => {
-    frame.addEventListener('click', () => openClip(frame.dataset.src, frame.dataset.caption));
+const rgba = (c, a = c.a) => `rgba(${c.r}, ${c.g}, ${c.b}, ${Math.round(a * 1000) / 1000})`;
+const solid = (c) => `rgb(${c.r}, ${c.g}, ${c.b})`;
+
+function mix(c1, c2, t) {
+  return {
+    a: 1,
+    r: Math.round(c1.r + (c2.r - c1.r) * t),
+    g: Math.round(c1.g + (c2.g - c1.g) * t),
+    b: Math.round(c1.b + (c2.b - c1.b) * t)
+  };
+}
+
+function applyTheme(theme) {
+  const k = theme.keys;
+  const shell = argb(k.shell), card = argb(k.card), ink = argb(k.ink), inkDim = argb(k.inkDim);
+  const root = document.documentElement.style;
+
+  root.setProperty('--shell', solid(shell));
+  root.setProperty('--surface', solid(mix(shell, card, 0.45)));
+  root.setProperty('--card', solid(card));
+  root.setProperty('--card-2', solid(mix(card, ink, 0.07)));
+  root.setProperty('--ink', solid(ink));
+  root.setProperty('--ink-dim', solid(inkDim));
+  /* Body copy sits on --ink-faint, so it steps down from --ink-dim away from
+     the background, never toward it — Daylight would otherwise wash out. */
+  const lightShell = (shell.r * 0.299 + shell.g * 0.587 + shell.b * 0.114) > 140;
+  root.setProperty('--ink-faint', solid(lightShell ? mix(inkDim, ink, 0.25) : mix(inkDim, shell, 0.18)));
+  root.setProperty('--line', rgba(ink, 0.10));
+  root.setProperty('--line-strong', rgba(ink, 0.18));
+  root.setProperty('--accent', solid(argb(k.accent)));
+  root.setProperty('--accent-ink', solid(shell));
+  root.setProperty('--running', solid(argb(k.running)));
+
+  root.setProperty('--w-slice', rgba(argb(k.slice)));
+  root.setProperty('--w-slice-hot', rgba(argb(k.sliceHot)));
+  root.setProperty('--w-edge', rgba(argb(k.edge)));
+  root.setProperty('--w-edge-hot', rgba(argb(k.edgeHot)));
+  root.setProperty('--w-ink', solid(ink));
+  root.setProperty('--w-ink-dim', solid(inkDim));
+  root.setProperty('--w-hub', rgba(argb(k.hub)));
+  root.setProperty('--w-tint', rgba(argb(k.tint)));
+
+  /* Overlays read the theme too, so Daylight does not get a black lightbox. */
+  root.setProperty('--scrim', rgba(shell, 0.9));
+  root.setProperty('--danger', lightShell ? '#C2410C' : '#FF8A5B');
+
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', solid(shell));
+
+  document.querySelectorAll('[data-theme-pick]').forEach(el => {
+    const on = el.dataset.themePick === theme.id;
+    el.setAttribute('aria-pressed', String(on));
+    el.closest('.theme-card')?.classList.toggle('is-current', on);
   });
 
-  closeBtn.addEventListener('click', closeClip);
-  box.addEventListener('click', (e) => { if (e.target === box) closeClip(); });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !box.hidden) closeClip();
+  try { localStorage.setItem('gola-theme', theme.id); } catch { /* private mode */ }
+}
+
+function themeJson(theme) {
+  const rows = Object.entries(theme.keys)
+    .map(([key, val]) => `  "${key}": "${val}"`)
+    .join(',\n');
+  return `"theme": {\n${rows}\n}`;
+}
+
+let apertureCount = 0;
+
+function apertureSvg(size, stroke) {
+  const id = 'ap' + apertureCount++;
+  const s = size, r = s * 0.36, w = s * 0.22, c = s / 2;
+  const p0 = [c + r * Math.cos(-Math.PI / 6), c + r * Math.sin(-Math.PI / 6)];
+  const p1 = [c, c - r];
+  const arc = `M${p0[0].toFixed(2)} ${p0[1].toFixed(2)} A${r} ${r} 0 1 1 ${p1[0].toFixed(2)} ${p1[1].toFixed(2)}`;
+  return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" aria-hidden="true">
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8FDCFF"/><stop offset="50%" stop-color="#5B6CFF"/><stop offset="100%" stop-color="#B44BFF"/>
+    </linearGradient></defs>
+    <path d="${arc}" fill="none" stroke="${stroke || `url(#${id})`}" stroke-width="${w}" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function initThemes() {
+  const dots = document.getElementById('themeDots');
+  const grid = document.getElementById('themeGrid');
+  if (!dots || !grid) return;
+
+  THEMES.forEach(theme => {
+    const k = theme.keys;
+
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'theme-dot';
+    dot.dataset.themePick = theme.id;
+    dot.setAttribute('aria-label', `${theme.name} theme`);
+    dot.setAttribute('aria-pressed', 'false');
+    dot.style.setProperty('--dot-fill',
+      `linear-gradient(135deg, ${solid(argb(k.card))} 0 50%, ${solid(argb(k.accent))} 50% 100%)`);
+    dot.addEventListener('click', () => applyTheme(theme));
+    dots.appendChild(dot);
+
+    const card = document.createElement('div');
+    card.className = 'theme-card';
+    card.innerHTML = `
+      <button type="button" class="theme-pick" data-theme-pick="${theme.id}" aria-pressed="false">
+        <span class="theme-swatch" style="background:${solid(argb(k.shell))}">
+          ${apertureSvg(46, solid(argb(k.accent)))}
+          <span class="theme-strip">
+            <span style="background:${solid(argb(k.accent))}"></span>
+            <span style="background:${solid(argb(k.running))}"></span>
+            <span style="background:${solid(argb(k.card))}"></span>
+            <span style="background:${solid(argb(k.inkDim))}"></span>
+          </span>
+        </span>
+        <span class="theme-body">
+          <span class="theme-name">${theme.name} <span class="theme-tag">${theme.tag}</span></span>
+          <span class="theme-desc">${theme.desc}</span>
+        </span>
+      </button>
+      <pre class="theme-json">${themeJson(theme)}</pre>`;
+    card.querySelector('.theme-pick').addEventListener('click', () => applyTheme(theme));
+    grid.appendChild(card);
+  });
+
+  let saved = null;
+  try { saved = localStorage.getItem('gola-theme'); } catch { /* private mode */ }
+  const preferred = window.matchMedia('(prefers-color-scheme: light)').matches ? 'daylight' : 'midnight';
+  applyTheme(THEMES.find(t => t.id === (saved || preferred)) || THEMES[0]);
+}
+
+/* ── The wheel ──────────────────────────────────────────────────────── */
+
+/* GeometryConfig, refined plate 4a of the UI reference. */
+const G = {
+  hub: 66,
+  innerIn: 100, innerOut: 196,
+  disc: 204,
+  outerIn: 208, outerOut: 296,
+  gap: 2.5,
+  fanSlice: 30,
+  dwellToFan: 350
+};
+
+const ITEMS = [
+  {
+    label: 'Claude', kind: 'app', mono: 'C', windows: 3,
+    fan: ['release notes', 'Gola — docs', 'store listing', 'New window']
+  },
+  { label: 'ChatGPT', kind: 'app', mono: 'G', windows: 0, fan: ['Launch ChatGPT'] },
+  { label: 'Antigravity', kind: 'app', mono: 'A', windows: 0, fan: ['Launch Antigravity'] },
+  { label: 'Edge', kind: 'app', mono: 'E', windows: 2, fan: ['Partner Center', 'gola site', 'New window'] },
+  { label: 'Files', kind: 'app', mono: 'F', windows: 2, fan: ['Documents', 'Downloads', 'New window'] },
+  { label: 'Terminal', kind: 'app', mono: 'T', windows: 0, fan: ['Launch Terminal'] },
+  {
+    label: 'System', kind: 'section', glyph: '\uE770',
+    fan: ['Lock', 'Sleep', 'Volume', 'Wi-Fi', 'Task mgr', 'Settings']
+  },
+  {
+    label: 'Tools', kind: 'section', glyph: '\uE90F',
+    fan: ['Timer', 'Calculator', 'Colour', 'Magnifier', 'Caffeine', 'Focus dim']
+  },
+  {
+    label: 'Shelf', kind: 'section', glyph: '\uE8F1',
+    fan: ['ship-notes.md', 'IMG-2213.jpg', 'VOICE-2213.ogg', 'Open Shelf']
+  }
+];
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const STEP = 360 / ITEMS.length;
+
+const pol = (r, deg) => {
+  const a = (deg * Math.PI) / 180;
+  return [r * Math.cos(a), r * Math.sin(a)];
+};
+
+function sector(a0, a1, r0, r1) {
+  const large = a1 - a0 > 180 ? 1 : 0;
+  const [x0, y0] = pol(r1, a0), [x1, y1] = pol(r1, a1);
+  const [x2, y2] = pol(r0, a1), [x3, y3] = pol(r0, a0);
+  return `M${x0.toFixed(2)} ${y0.toFixed(2)} A${r1} ${r1} 0 ${large} 1 ${x1.toFixed(2)} ${y1.toFixed(2)}` +
+         ` L${x2.toFixed(2)} ${y2.toFixed(2)} A${r0} ${r0} 0 ${large} 0 ${x3.toFixed(2)} ${y3.toFixed(2)} Z`;
+}
+
+function el(name, attrs, text) {
+  const node = document.createElementNS(SVG_NS, name);
+  for (const key in attrs) node.setAttribute(key, attrs[key]);
+  if (text != null) node.textContent = text;
+  return node;
+}
+
+function initWheel() {
+  const stage = document.getElementById('wheelStage');
+  const svg = document.getElementById('wheelSvg');
+  if (!stage || !svg) return;
+
+  const stateEl = document.getElementById('readoutState');
+  const targetEl = document.getElementById('readoutTarget');
+  const detailEl = document.getElementById('readoutDetail');
+
+  const body = el('g', { class: 'wheel-body' });
+  svg.appendChild(body);
+
+  body.appendChild(el('circle', { class: 'w-disc', cx: 0, cy: 0, r: G.disc }));
+
+  const fanLayer = el('g', { class: 'w-fan' });
+  body.appendChild(fanLayer);
+
+  const slices = ITEMS.map((item, i) => {
+    const mid = -90 + i * STEP;
+    const a0 = mid - STEP / 2 + G.gap / 2;
+    const a1 = mid + STEP / 2 - G.gap / 2;
+
+    const g = el('g');
+    const path = el('path', { class: 'w-slice', d: sector(a0, a1, G.innerIn, G.innerOut) });
+    g.appendChild(path);
+
+    const [gx, gy] = pol(132, mid);
+    if (item.kind === 'app') {
+      g.appendChild(el('text', { class: 'w-glyph', x: gx, y: gy, style: 'font-family:var(--display);font-weight:700;font-size:19px' }, item.mono));
+    } else {
+      g.appendChild(el('text', { class: 'w-glyph', x: gx, y: gy }, item.glyph));
+    }
+
+    const [lx, ly] = pol(163, mid);
+    g.appendChild(el('text', { class: 'w-label', x: lx, y: ly }, item.label));
+
+    if (item.windows > 0) {
+      const [dx, dy] = pol(182, mid);
+      g.appendChild(el('circle', { class: 'w-dot', cx: dx - 7, cy: dy, r: 3.2 }));
+      g.appendChild(el('text', { class: 'w-count', x: dx + 6, y: dy }, String(item.windows)));
+    }
+
+    body.appendChild(g);
+    return { item, mid, path };
+  });
+
+  body.appendChild(el('circle', { class: 'w-hub', cx: 0, cy: 0, r: G.hub }));
+  const hubTop = el('text', { class: 'w-hub-text', x: 0, y: -7 }, 'GOLA');
+  const hubSub = el('text', { class: 'w-hub-text', x: 0, y: 9, style: 'opacity:.6' }, 'idle');
+  body.appendChild(hubTop);
+  body.appendChild(hubSub);
+
+  const state = { open: false, slice: null, fanOf: null, fanHot: null, visible: false };
+  let dwellTimer = null;
+  let fanNodes = [];
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function say(head, target, detail) {
+    stateEl.textContent = head;
+    targetEl.textContent = target;
+    detailEl.textContent = detail;
+  }
+
+  function clearFan() {
+    fanLayer.replaceChildren();
+    fanNodes = [];
+    state.fanOf = null;
+    state.fanHot = null;
+  }
+
+  function drawFan(index) {
+    clearFan();
+    const { item, mid } = slices[index];
+    const items = item.fan;
+    const spread = Math.min(items.length * G.fanSlice, 320);
+    const width = spread / items.length;
+    const start = mid - spread / 2;
+
+    fanNodes = items.map((label, i) => {
+      const a0 = start + i * width + G.gap / 2;
+      const a1 = start + (i + 1) * width - G.gap / 2;
+      const centre = (a0 + a1) / 2;
+
+      const g = el('g');
+      const path = el('path', { class: 'w-slice', d: sector(a0, a1, G.outerIn, G.outerOut) });
+      g.appendChild(path);
+
+      const [tx, ty] = pol(252, centre);
+      const short = label.length > 15 ? label.slice(0, 14) + '…' : label;
+      g.appendChild(el('text', { class: 'w-label', x: tx, y: ty, style: 'font-size:12px' }, short));
+
+      fanLayer.appendChild(g);
+      return { label, a0, a1, path };
+    });
+
+    state.fanOf = index;
+    hubSub.textContent = item.label.toLowerCase();
+  }
+
+  function setSlice(index, immediate) {
+    if (state.slice === index) return;
+    state.slice = index;
+    slices.forEach((s, i) => s.path.classList.toggle('is-hot', i === index));
+    clearTimeout(dwellTimer);
+
+    if (index === null) {
+      clearFan();
+      hubSub.textContent = 'idle';
+      say('Open', 'Nothing under the cursor', 'Release here and the wheel just dismisses — no accidental picks.');
+      return;
+    }
+
+    const { item } = slices[index];
+    const detail = item.kind === 'section'
+      ? `Dwell ${G.dwellToFan} ms and the section fans its actions onto the outer ring.`
+      : item.windows === 0
+        ? 'Not running. Release and it launches.'
+        : item.windows === 1
+          ? 'One window. Release and it focuses.'
+          : `${item.windows} live windows. Dwell ${G.dwellToFan} ms and they fan out.`;
+
+    say('Slice', item.label, detail);
+
+    if (immediate || reduceMotion) drawFan(index);
+    else dwellTimer = setTimeout(() => drawFan(index), G.dwellToFan);
+  }
+
+  function setFanHot(index) {
+    if (state.fanHot === index) return;
+    state.fanHot = index;
+    fanNodes.forEach((n, i) => n.path.classList.toggle('is-hot', i === index));
+    if (index === null) return;
+    say('Outer ring', fanNodes[index].label, 'Release here and this is what opens.');
+  }
+
+  function open() {
+    if (state.open) return;
+    state.open = true;
+    stage.classList.add('is-open');
+    hubSub.textContent = 'open';
+    say('Open', 'Nothing under the cursor', 'Move onto a slice. Number keys 1–9 pick one directly.');
+  }
+
+  function close(message) {
+    state.open = false;
+    stage.classList.remove('is-open');
+    clearTimeout(dwellTimer);
+    slices.forEach(s => s.path.classList.remove('is-hot'));
+    clearFan();
+    state.slice = null;
+    hubSub.textContent = 'idle';
+    if (message) say('Released', message.target, message.detail);
+    else say('Idle', 'Nothing under the cursor', 'The wheel sits closed in the tray until you hold the chord.');
+  }
+
+  function release() {
+    if (!state.open) return;
+
+    if (state.fanHot !== null && fanNodes[state.fanHot]) {
+      const label = fanNodes[state.fanHot].label;
+      const verb = label.startsWith('Launch') || label === 'New window' || label === 'Open Shelf' ? 'Ran' : 'Focused';
+      close({ target: label, detail: `${verb} it and the wheel closed in one gesture.` });
+      return;
+    }
+    if (state.slice !== null) {
+      const { item } = slices[state.slice];
+      const detail = item.kind === 'section'
+        ? `Opened the ${item.label} section.`
+        : item.windows === 0 ? `Launched ${item.label}.` : `Focused ${item.label}'s main window.`;
+      close({ target: item.label, detail });
+      return;
+    }
+    close({ target: 'Dismissed', detail: 'You released outside the wheel, so nothing ran.' });
+  }
+
+  /* The rect is cached because track() runs on every pointermove right after
+     the previous move wrote classes — measuring there forces a layout. */
+  let rect = null;
+  const remeasure = () => { rect = stage.getBoundingClientRect(); };
+  window.addEventListener('scroll', () => { if (state.open) remeasure(); }, { passive: true });
+  window.addEventListener('resize', () => { rect = null; });
+
+  /* Pointer geometry — the same maths the app does with the cursor. */
+  function track(ev) {
+    if (!state.open) return;
+    if (!rect) remeasure();
+    const scale = 620 / rect.width;
+    const x = (ev.clientX - rect.left - rect.width / 2) * scale;
+    const y = (ev.clientY - rect.top - rect.height / 2) * scale;
+    const r = Math.hypot(x, y);
+    let deg = (Math.atan2(y, x) * 180) / Math.PI;
+
+    if (r >= G.outerIn - 6 && r <= G.outerOut + 6 && fanNodes.length) {
+      const hit = fanNodes.findIndex(n => {
+        let a = deg;
+        while (a < n.a0 - 180) a += 360;
+        while (a > n.a0 + 180) a -= 360;
+        return a >= n.a0 && a <= n.a1;
+      });
+      setFanHot(hit === -1 ? null : hit);
+      return;
+    }
+    setFanHot(null);
+
+    if (r >= G.innerIn - 8 && r <= G.innerOut + 8) {
+      const idx = (Math.round((deg + 90) / STEP) % ITEMS.length + ITEMS.length) % ITEMS.length;
+      setSlice(idx, false);
+      return;
+    }
+    if (r < G.hub) {
+      setSlice(null, false);
+      return;
+    }
+    if (r > G.outerOut + 20) setSlice(null, false);
+  }
+
+  stage.addEventListener('pointerdown', ev => {
+    ev.preventDefault();
+    stage.setPointerCapture(ev.pointerId);
+    remeasure();
+    open();
+    track(ev);
+  });
+  stage.addEventListener('pointermove', track);
+  stage.addEventListener('pointerup', release);
+  stage.addEventListener('pointercancel', () => close());
+  stage.addEventListener('pointerleave', () => { if (state.open) setSlice(null, false); });
+
+  /* Hold Ctrl+Alt anywhere, but only while the wheel is actually on screen. */
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      state.visible = entries[0].isIntersecting;
+      if (!state.visible && state.open) close();
+    }, { threshold: 0.35 }).observe(stage);
+  } else {
+    state.visible = true;
+  }
+
+  const isTyping = target =>
+    target instanceof HTMLElement &&
+    (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName));
+
+  document.addEventListener('keydown', ev => {
+    if (!state.visible) return;
+
+    if (ev.key === 'Escape' && state.open) {
+      close({ target: 'Closed', detail: 'Esc closes the wheel without running anything.' });
+      return;
+    }
+    if (isTyping(ev.target)) return;
+
+    if (state.open && ev.key >= '1' && ev.key <= '9') {
+      const idx = Number(ev.key) - 1;
+      if (idx < ITEMS.length) {
+        ev.preventDefault();
+        setSlice(idx, true);
+      }
+      return;
+    }
+
+    /* Windows reports AltGr as Ctrl+Alt — the collision the FAQ documents.
+       Only a real Ctrl+Alt press opens the wheel, never AltGr composing a
+       character, and never a bare letter arriving with those flags set. */
+    if ((ev.key === 'Control' || ev.key === 'Alt') &&
+        !ev.getModifierState('AltGraph') &&
+        ev.ctrlKey && ev.altKey && !ev.shiftKey && !state.open) {
+      ev.preventDefault();
+      remeasure();
+      open();
+    }
+  });
+
+  document.addEventListener('keyup', ev => {
+    if (state.open && (!ev.ctrlKey || !ev.altKey) && (ev.key === 'Control' || ev.key === 'Alt')) release();
+  });
+
+  window.addEventListener('blur', () => { if (state.open) close(); });
+}
+
+/* ── Clips ──────────────────────────────────────────────────────────── */
+
+function initClips() {
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const videos = document.querySelectorAll('.clip-frame video');
+
+  /* No controls here: the video sits inside the button that opens the
+     lightbox, and a control surface over it swallows that click. Reduced
+     motion gets the poster, and the lightbox provides the controls. */
+  if (!reduce && 'IntersectionObserver' in window) {
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const v = entry.target;
+        if (entry.isIntersecting) {
+          if (v.preload === 'none') v.preload = 'auto';
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+        }
+      });
+    }, { threshold: 0.25 });
+    videos.forEach(v => io.observe(v));
+  }
+
+  const box = document.getElementById('lightbox');
+  const boxVideo = document.getElementById('lightboxVideo');
+  const boxCaption = document.getElementById('lightboxCaption');
+  const boxClose = document.getElementById('lightboxClose');
+  if (!box) return;
+
+  let opener = null;
+  /* inert keeps focus inside the dialog — without it Tab walks straight into
+     the page the scrim is covering. */
+  const behind = [document.querySelector('header'), document.querySelector('main'),
+                  document.querySelector('footer')].filter(Boolean);
+
+  function show(button) {
+    opener = button;
+    boxVideo.src = button.dataset.src;
+    boxCaption.textContent = button.dataset.caption || '';
+    box.hidden = false;
+    behind.forEach(n => n.setAttribute('inert', ''));
+    document.body.style.overflow = 'hidden';
+    boxVideo.play().catch(() => {});
+    boxClose.focus();
+  }
+
+  function hide() {
+    box.hidden = true;
+    boxVideo.pause();
+    boxVideo.removeAttribute('src');
+    behind.forEach(n => n.removeAttribute('inert'));
+    document.body.style.overflow = '';
+    opener?.focus();
+  }
+
+  document.querySelectorAll('.clip-frame').forEach(btn => {
+    btn.addEventListener('click', () => show(btn));
+  });
+  boxClose.addEventListener('click', hide);
+  box.addEventListener('click', ev => { if (ev.target === box) hide(); });
+  document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !box.hidden) hide(); });
+}
+
+/* ── Chord chips ────────────────────────────────────────────────────── */
+
+function initChord() {
+  const chips = document.querySelectorAll('.chip[data-mod]');
+  const preview = document.getElementById('chordPreview');
+  if (!chips.length || !preview) return;
+
+  function render() {
+    const on = [...chips].filter(c => c.classList.contains('is-on')).map(c => c.dataset.mod);
+    preview.innerHTML = on.length
+      ? `Hold <b>${on.join(' + ')}</b>`
+      : 'Pick at least one modifier — the wheel needs a key you can hold.';
+  }
+
+  chips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('is-on');
+      chip.setAttribute('aria-pressed', String(chip.classList.contains('is-on')));
+      render();
+    });
+    chip.setAttribute('aria-pressed', String(chip.classList.contains('is-on')));
+  });
+  render();
+}
+
+/* ── FAQ filter ─────────────────────────────────────────────────────── */
+
+function initFaq() {
+  const input = document.getElementById('faqSearch');
+  const empty = document.getElementById('faqEmpty');
+  if (!input) return;
+  const items = [...document.querySelectorAll('.faq-item')];
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let shown = 0;
+    items.forEach(item => {
+      const hit = !q || item.textContent.toLowerCase().includes(q);
+      item.hidden = !hit;
+      if (hit) shown++;
+      if (hit && q) item.open = true;
+    });
+    empty.hidden = shown > 0;
   });
 }
+
+/* ── Waitlist ───────────────────────────────────────────────────────── */
 
 function initWaitlist() {
   const form = document.getElementById('waitlistForm');
   if (!form) return;
-
   const input = document.getElementById('waitlistEmail');
   const status = document.getElementById('waitlistStatus');
-  const submit = form.querySelector('.waitlist-submit');
+  const button = form.querySelector('button[type="submit"]');
 
-  function say(message, kind) {
-    status.textContent = message;
-    status.className = 'waitlist-status' + (kind ? ' ' + kind : '');
+  function report(text, kind) {
+    status.textContent = text;
+    status.className = 'waitlist-status' + (kind ? ' is-' + kind : '');
   }
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
+  form.addEventListener('submit', ev => {
+    ev.preventDefault();
     const email = input.value.trim();
-
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-      input.classList.add('invalid');
-      say('That does not look like an email address.', 'error');
+      report('That address does not look complete. Check it and try again.', 'bad');
       input.focus();
       return;
     }
-    input.classList.remove('invalid');
 
     if (!WAITLIST_ENDPOINT) {
-      // No backend wired up: hand off to the mail client, and name the address
-      // in plain text so the visitor is never stuck if nothing opens.
-      say('Opening your mail app — send the draft and you are on the list. ' +
-          'If nothing opens, email ' + WAITLIST_MAILTO + ' instead.');
-      window.location.href = 'mailto:' + WAITLIST_MAILTO +
-        '?subject=' + encodeURIComponent('Gola waitlist') +
-        '&body=' + encodeURIComponent('Please add ' + email + ' to the Gola waitlist.');
+      window.location.href = `mailto:${WAITLIST_MAILTO}?subject=Gola%20waitlist&body=${encodeURIComponent(email)}`;
+      report('Opening your mail app.', 'ok');
       return;
     }
 
-    submit.disabled = true;
-    say('Adding you…');
+    button.disabled = true;
+    report('Sending…');
 
     fetch(WAITLIST_ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      // _subject is a Formspree convention — it titles the notification email.
-      body: JSON.stringify({ email: email, _subject: 'Gola waitlist signup' })
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ email })
     })
       .then(res => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        if (!res.ok) throw new Error(String(res.status));
         form.reset();
-        say('You are on the list. One email when it ships.', 'ok');
+        report('You are on the list. One email, the day it ships.', 'ok');
       })
       .catch(() => {
-        say('That did not go through. Email ' + WAITLIST_MAILTO + ' and you will be added by hand.', 'error');
+        report(`That did not go through. Email ${WAITLIST_MAILTO} and you will be added by hand.`, 'bad');
       })
-      .then(() => { submit.disabled = false; });
+      .finally(() => { button.disabled = false; });
   });
 }
 
-function initStepByStepRadialLauncher() {
-  const canvasWrap = document.getElementById('wheelCanvasWrap');
-  if (!canvasWrap) return;
-
-  const slices = [
-    { id: 'claude', name: 'Claude', icon: 'C', running: true, count: 3, desc: '3 live windows open. Slide onto outer fan previews or release to focus main window.' },
-    { id: 'chatgpt', name: 'ChatGPT', icon: 'G', running: true, count: 1, desc: '1 window running. Release to focus.' },
-    { id: 'antigravity', name: 'Antigravity', icon: 'A', running: false, count: 0, desc: 'Not running. Release to launch.' },
-    { id: 'edge', name: 'Edge', icon: 'E', running: true, count: 2, desc: '2 browser windows open.' },
-    { id: 'files', name: 'Files', icon: 'F', running: true, count: 1, desc: 'File Explorer active.' },
-    { id: 'terminal', name: 'Terminal', icon: 'T', running: false, count: 0, desc: 'Not running. Release to open terminal window.' },
-    { id: 'system', name: 'System', icon: '⚙️', isSymbol: true, running: false, count: 6, desc: 'System controls: Settings, Task Manager, Wi-Fi, Volume, Sleep, Lock.' },
-    { id: 'tools', name: 'Tools', icon: '🛠️', isSymbol: true, running: false, count: 10, desc: '10 popover utilities: Timer, Calculator, Color Picker, Clipboard, Magnifier, Screenshot, Note, Caffeine, Focus Dim, Dictate.' },
-    { id: 'shelf', name: 'Shelf', icon: '📥', isSymbol: true, running: false, count: 7, desc: '7-day file inbox with preview, search & Telegram bot integration.' }
-  ];
-
-  // Guided Step-by-Step State
-  // Step 1: Hold Trigger Chord -> Step 2: Select Slice (Keys 1-8) -> Step 3: Dwell / Fan Out -> Step 4: Execute or Dismiss (Esc)
-  let currentStep = 1; 
-  let activeIndex = 0;
-  let wheelOpen = true;
-
-  const stepBadge = document.getElementById('interactiveStepBadge');
-  const stepPrompt = document.getElementById('interactiveStepPrompt');
-  const sliceTitle = document.getElementById('activeSliceTitle');
-  const sliceDesc = document.getElementById('activeSliceDesc');
-  const triggerBtns = document.querySelectorAll('.chord-trigger-btn');
-  const nextStepBtn = document.getElementById('nextStepBtn');
-
-  function updateStepUI() {
-    if (!stepBadge || !stepPrompt) return;
-
-    if (currentStep === 1) {
-      stepBadge.textContent = 'Step 1 of 4 — Summon';
-      stepPrompt.innerHTML = 'Press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>, or click a trigger below, to open the wheel under your cursor.';
-    } else if (currentStep === 2) {
-      stepBadge.textContent = 'Step 2 of 4 — Target a slice';
-      stepPrompt.innerHTML = 'Press <kbd>1</kbd>–<kbd>9</kbd>, or hover a slice, to target an app or a section.';
-    } else if (currentStep === 3) {
-      stepBadge.textContent = 'Step 3 of 4 — Fan out';
-      stepPrompt.innerHTML = 'Dwell on the slice and its windows or actions fan onto the outer ring.';
-    } else if (currentStep === 4) {
-      stepBadge.textContent = 'Step 4 of 4 — Run or dismiss';
-      stepPrompt.innerHTML = 'Release on an outer item to run it, or press <kbd>Esc</kbd> to close the wheel.';
-    }
-
-    if (nextStepBtn) {
-      nextStepBtn.textContent = currentStep < 4
-        ? `Next step (${currentStep + 1}/4)`
-        : 'Restart the flow';
-    }
-  }
-
-  function renderSvgWheel() {
-    const size = 620;
-    const center = 310;
-    const rInner1 = 100;
-    const rInner2 = 196;
-    const rFan1 = 208;
-    const rFan2 = 296;
-    const gapAngleRad = (2.5 * Math.PI) / 180;
-    const numSlices = slices.length;
-    const totalStep = (2 * Math.PI) / numSlices;
-
-    let svg = `<svg width="100%" height="100%" viewBox="0 0 ${size} ${size}" style="user-select:none; overflow:visible;">
-      <defs>
-        <linearGradient id="apertureGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#8FDCFF"/>
-          <stop offset="50%" stop-color="#5B6CFF"/>
-          <stop offset="100%" stop-color="#B44BFF"/>
-        </linearGradient>
-
-        <filter id="sliceGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
-
-      <circle cx="${center}" cy="${center}" r="${rFan2}" fill="rgba(8, 8, 14, 0.65)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
-    `;
-
-    // Inner Ring Slices
-    slices.forEach((slice, i) => {
-      const baseStartAngle = i * totalStep - Math.PI / 2;
-      const baseEndAngle = (i + 1) * totalStep - Math.PI / 2;
-      const startAngle = baseStartAngle + gapAngleRad / 2;
-      const endAngle = baseEndAngle - gapAngleRad / 2;
-      const midAngle = (startAngle + endAngle) / 2;
-
-      const isActive = i === activeIndex;
-
-      const fill = isActive ? 'rgba(110, 134, 255, 0.447)' : 'rgba(255, 255, 255, 0.149)';
-      const stroke = isActive ? 'rgba(174, 187, 255, 0.8)' : 'rgba(255, 255, 255, 0.271)';
-
-      const x1 = center + rInner1 * Math.cos(startAngle);
-      const y1 = center + rInner1 * Math.sin(startAngle);
-      const x2 = center + rInner2 * Math.cos(startAngle);
-      const y2 = center + rInner2 * Math.sin(startAngle);
-      const x3 = center + rInner2 * Math.cos(endAngle);
-      const y3 = center + rInner2 * Math.sin(endAngle);
-      const x4 = center + rInner1 * Math.cos(endAngle);
-      const y4 = center + rInner1 * Math.sin(endAngle);
-
-      const pathData = `M ${x1} ${y1} L ${x2} ${y2} A ${rInner2} ${rInner2} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${rInner1} ${rInner1} 0 0 0 ${x1} ${y1} Z`;
-
-      const labelRadius = (rInner1 + rInner2) / 2;
-      const lx = center + labelRadius * Math.cos(midAngle);
-      const ly = center + labelRadius * Math.sin(midAngle);
-
-      svg += `
-        <g class="wheel-slice" data-index="${i}" style="cursor:pointer;">
-          <path d="${pathData}" fill="${fill}" stroke="${stroke}" stroke-width="${isActive ? 1.5 : 1}" 
-                style="${isActive ? 'filter:url(#sliceGlow);' : ''}" />
-        </g>
-      `;
-
-      svg += `
-        <g style="pointer-events:none; transform: translate(${lx}px, ${ly}px);">
-          <rect x="-22" y="-32" width="44" height="44" rx="12" 
-                fill="rgba(255,255,255,0.11)" stroke="rgba(255,255,255,0.30)" stroke-width="1"/>
-          
-          <text x="0" y="-5" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-weight="600" font-size="19" fill="#FFF">
-            ${slice.icon}
-          </text>
-
-          <text x="0" y="26" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-weight="600" font-size="13" fill="#FFF">
-            ${slice.name}
-          </text>
-
-          ${slice.running ? `
-            <g transform="translate(0, 40)">
-              <circle cx="${slice.count > 1 ? -8 : 0}" cy="0" r="3.5" fill="#4AE38B" style="filter: drop-shadow(0 0 4px #4AE38B);" />
-              ${slice.count > 1 ? `<text x="4" y="3" font-family="'Segoe UI', sans-serif" font-weight="600" font-size="11" fill="#4AE38B">${slice.count}</text>` : ''}
-            </g>
-          ` : ''}
-        </g>
-      `;
-    });
-
-    // Outer Fan Ring (Active during Steps 3 and 4)
-    const activeSlice = slices[activeIndex];
-    if (activeSlice && activeSlice.count > 0 && currentStep >= 3) {
-      const activeMidAngle = (activeIndex + 0.5) * totalStep - Math.PI / 2;
-      const fanAngleSpan = totalStep * 1.5;
-      const fanStart = activeMidAngle - fanAngleSpan / 2;
-      const fanEnd = activeMidAngle + fanAngleSpan / 2;
-
-      const fx1 = center + rFan1 * Math.cos(fanStart);
-      const fy1 = center + rFan1 * Math.sin(fanStart);
-      const fx2 = center + rFan2 * Math.cos(fanStart);
-      const fy2 = center + rFan2 * Math.sin(fanStart);
-      const fx3 = center + rFan2 * Math.cos(fanEnd);
-      const fy3 = center + rFan2 * Math.sin(fanEnd);
-      const fx4 = center + rFan1 * Math.cos(fanEnd);
-      const fy4 = center + rFan1 * Math.sin(fanEnd);
-
-      const fanPath = `M ${fx1} ${fy1} L ${fx2} ${fy2} A ${rFan2} ${rFan2} 0 0 1 ${fx3} ${fy3} L ${fx4} ${fy4} A ${rFan1} ${rFan1} 0 0 0 ${fx1} ${fy1} Z`;
-
-      svg += `
-        <path d="${fanPath}" fill="rgba(110, 134, 255, 0.447)" stroke="rgba(174, 187, 255, 0.8)" stroke-width="1" />
-      `;
-
-      for (let k = 0; k < Math.min(activeSlice.count, 3); k++) {
-        const thumbAngle = fanStart + ((k + 0.5) * (fanAngleSpan / Math.min(activeSlice.count, 3)));
-        const tx = center + ((rFan1 + rFan2) / 2) * Math.cos(thumbAngle);
-        const ty = center + ((rFan1 + rFan2) / 2) * Math.sin(thumbAngle);
-
-        svg += `
-          <g transform="translate(${tx}, ${ty})" style="pointer-events:none;">
-            <rect x="-44" y="-26" width="88" height="52" rx="7" fill="rgba(8, 10, 18, 0.6)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
-            <rect x="-44" y="10" width="88" height="16" fill="rgba(6,7,12,0.85)"/>
-            <text x="0" y="22" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-weight="600" font-size="10.5" fill="#FFF">
-              Window ${k + 1}
-            </text>
-          </g>
-        `;
-      }
-    }
-
-    // Center Hub & Brand Aperture Mark
-    svg += `
-      <circle cx="${center}" cy="${center}" r="66" fill="rgba(8, 8, 13, 0.85)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
-      <g transform="translate(${center - 26}, ${center - 26})">
-        <svg width="52" height="52" viewBox="0 0 32 32">
-          <path d="M25.98 10.24 A11.52 11.52 0 1 1 16.00 4.48" fill="none" stroke="url(#apertureGrad)" stroke-width="7.04" stroke-linecap="round"/>
-        </svg>
-      </g>
-    `;
-
-    svg += `</svg>`;
-    canvasWrap.innerHTML = svg;
-
-    const sliceEls = canvasWrap.querySelectorAll('.wheel-slice');
-    sliceEls.forEach(el => {
-      el.addEventListener('mouseenter', () => {
-        const idx = parseInt(el.getAttribute('data-index'), 10);
-        selectSlice(idx);
-        if (currentStep === 1 || currentStep === 2) {
-          advanceStep(3);
-        }
-      });
-      el.addEventListener('click', () => {
-        const idx = parseInt(el.getAttribute('data-index'), 10);
-        selectSlice(idx);
-        advanceStep(4);
-      });
-    });
-  }
-
-  function advanceStep(targetStep) {
-    if (targetStep) {
-      currentStep = targetStep;
-    } else {
-      currentStep = currentStep < 4 ? currentStep + 1 : 1;
-    }
-    updateStepUI();
-    renderSvgWheel();
-  }
-
-  function selectSlice(index) {
-    activeIndex = index;
-    const slice = slices[index];
-    if (sliceTitle && sliceDesc) {
-      sliceTitle.innerHTML = `<span>${slice.icon}</span> ${slice.name} <span style="font-size:12px; color:var(--ink-muted);">[Key ${index + 1}]</span>`;
-      sliceDesc.textContent = slice.desc;
-    }
-    renderSvgWheel();
-  }
-
-  if (nextStepBtn) {
-    nextStepBtn.addEventListener('click', () => {
-      advanceStep();
-    });
-  }
-
-  triggerBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      triggerBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      advanceStep(2);
-    });
-  });
-
-  // Key Listeners for Step-by-Step Execution
-  document.addEventListener('keydown', (e) => {
-    if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
-
-    // While a clip is open in the lightbox, keys belong to the lightbox.
-    const lightbox = document.getElementById('clipLightbox');
-    if (lightbox && !lightbox.hidden) return;
-
-    const keyNum = parseInt(e.key, 10);
-    if (keyNum >= 1 && keyNum <= slices.length) {
-      selectSlice(keyNum - 1);
-      advanceStep(3);
-    } else if (e.key === 'Escape') {
-      currentStep = 4;
-      updateStepUI();
-      if (sliceTitle && sliceDesc) {
-        sliceTitle.textContent = 'Wheel Dismissed (Esc)';
-        sliceDesc.textContent = 'Releasing outside or pressing Esc closes the wheel immediately.';
-      }
-      renderSvgWheel();
-    } else if (e.ctrlKey && e.altKey) {
-      advanceStep(2);
-    }
-  });
-
-  updateStepUI();
-  selectSlice(0);
-}
-
-function initFaqSearch() {
-  const searchInput = document.getElementById('faqSearchInput');
-  const faqItems = document.querySelectorAll('.faq-item');
-
-  if (!searchInput || !faqItems.length) return;
-
-  searchInput.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase().trim();
-
-    faqItems.forEach(item => {
-      const qText = item.querySelector('.faq-question').textContent.toLowerCase();
-      const aText = item.querySelector('.faq-answer').textContent.toLowerCase();
-
-      if (qText.includes(query) || aText.includes(query)) {
-        item.style.display = 'block';
-      } else {
-        item.style.display = 'none';
-      }
-    });
-  });
-}
-
-function initAccordion() {
-  const faqQuestions = document.querySelectorAll('.faq-question');
-
-  function toggle(q) {
-    const parent = q.parentElement;
-    const isOpen = parent.classList.contains('open');
-
-    document.querySelectorAll('.faq-item').forEach(item => item.classList.remove('open'));
-
-    if (!isOpen) {
-      parent.classList.add('open');
-    }
-    q.setAttribute('aria-expanded', String(!isOpen));
-  }
-
-  faqQuestions.forEach(q => {
-    q.setAttribute('aria-expanded', 'false');
-    q.addEventListener('click', () => toggle(q));
-    q.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggle(q);
-      }
-    });
-  });
-}
+document.addEventListener('DOMContentLoaded', () => {
+  initThemes();
+  initWheel();
+  initClips();
+  initChord();
+  initFaq();
+  initWaitlist();
+});

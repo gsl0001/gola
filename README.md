@@ -4,14 +4,18 @@ The help and landing page for **Gola**, a radial launcher for Windows 10 and 11.
 
 Live at **https://gsl0001.github.io/gola/** — GitHub Pages, serving `main` at root.
 
-One static page. No generator, no build step, no dependencies:
+One static page. No generator and no build step:
 
 ```
 index.html    the page
 styles.css    the design system
-app.js        interactive wheel, clip lightbox, FAQ, waitlist
+app.js        interactive wheel, themes, clip lightbox, FAQ, waitlist
 assets/       clips, posters, screenshots, trailer, favicon
 ```
+
+The only external request is the Google Fonts stylesheet for Archivo and IBM Plex Mono. Body
+text is set in Segoe UI Variable, which Windows visitors already have, so the page still reads
+correctly if that request fails.
 
 Open `index.html` in a browser to work on it. Anything pushed to `main` is live in a minute or so.
 
