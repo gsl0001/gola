@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gola — radial launcher for Windows</title>
-  <meta name="description" content="Hold Ctrl+Alt and a frosted wheel opens under your cursor: your apps, their live windows, ten tools and the system controls. Slide to a slice, let go.">
+  <meta name="description" content="Hold a chord you choose — or a mouse button — and a frosted wheel opens under your cursor: your apps, their live windows, ten tools and the system controls. Slide to a slice, let go.">
   <meta name="theme-color" content="#08080C">
   <link rel="icon" type="image/png" href="assets/icons/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -39,9 +39,9 @@
       <a href="#wheel">The wheel</a>
       <a href="#clips">Recordings</a>
       <a href="#features">Features</a>
-      <a href="#themes">Themes</a>
       <a href="#privacy">Privacy</a>
       <a href="#faq">FAQ</a>
+      <a href="#feedback">Feedback</a>
     </nav>
 
     <div class="theme-switch" role="group" aria-label="Theme">
@@ -49,7 +49,7 @@
       <div class="theme-dots" id="themeDots"></div>
     </div>
 
-    <a class="btn btn-accent topbar-cta" href="#waitlist">Get the release mail</a>
+    <a class="btn btn-accent topbar-cta" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site">Get it</a>
   </div>
 </header>
 
@@ -62,15 +62,16 @@
         <p class="eyebrow">Radial launcher · Windows 10 &amp; 11</p>
         <h1 class="hero-title">Hold.<br>Flick.<br><span class="hero-title-accent">Let go.</span></h1>
         <p class="hero-lede">
-          A wheel opens under your cursor with the apps you curate, their live windows, ten tools
-          and the system controls. One gesture, no window to find, no trip to the taskbar.
+          Hold a chord you choose — or a mouse button — and a wheel opens under your cursor with
+          the apps you curate, their live windows, ten tools and the system controls. One gesture,
+          no window to find, no trip to the taskbar.
         </p>
 
         <div class="hero-actions">
-          <a class="btn btn-accent" href="#waitlist">Get the release mail</a>
+          <a class="btn btn-accent" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site">Get it on the Microsoft Store</a>
           <a class="btn btn-quiet" href="#clips">Watch it run</a>
         </div>
-        <p class="hero-note">Coming to the Microsoft Store. No account, no telemetry, no servers.</p>
+        <p class="hero-note">On the Microsoft Store. No account, no telemetry, no servers.</p>
       </div>
 
       <!-- Signature: the real wheel, at the real geometry -->
@@ -119,55 +120,6 @@
   </section>
 
   <!-- ── The four things on the inner ring ───────────────────────────── -->
-  <section class="band" id="ring">
-    <div class="shell">
-      <div class="band-head">
-        <h2>What one gesture reaches</h2>
-        <p class="band-spec">Inner ring · your apps + three sections</p>
-      </div>
-
-      <div class="ring-grid">
-        <article class="ring-card">
-          <h3>Your apps, curated</h3>
-          <p>
-            Gola never scrapes your taskbar. You decide what sits on the ring; the icon is pulled
-            out of the executable, so nothing is bundled. A slice behaves like a taskbar button:
-            not running, it launches; one window, it focuses; several, they fan out.
-          </p>
-          <p class="ring-tag"><span class="dot"></span> A green dot means running, with a count beside it</p>
-        </article>
-
-        <article class="ring-card">
-          <h3>System</h3>
-          <p>Lock, Sleep, Volume, Wi-Fi, Task Manager and Settings, fanned onto the outer ring.</p>
-          <ul class="chip-list">
-            <li>Lock</li><li>Sleep</li><li>Volume</li><li>Wi-Fi</li><li>Task&nbsp;mgr</li><li>Settings</li>
-          </ul>
-        </article>
-
-        <article class="ring-card">
-          <h3>Tools</h3>
-          <p>Popovers, not windows. They open beside the wheel and outlive the gesture; pin the ones you want floating.</p>
-          <ul class="chip-list">
-            <li>Timer</li><li>Calculator</li><li>Colour&nbsp;picker</li><li>Magnifier</li>
-            <li>Clipboard</li><li>Screenshot</li><li>Quick&nbsp;note</li><li>Caffeine</li>
-            <li>Focus&nbsp;dim</li><li>Dictate</li>
-          </ul>
-        </article>
-
-        <article class="ring-card">
-          <h3>Shelf</h3>
-          <p>
-            Release to open the seven-day file inbox. Dwell instead and it lists what landed
-            recently plus your last clipboard entries, without opening a window at all.
-          </p>
-          <p class="ring-tag">Watches <code>Gola\Inbox</code>, <code>Downloads</code> and Telegram Desktop</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Recordings ──────────────────────────────────────────────────── -->
   <section class="band band-alt" id="clips">
     <div class="shell">
       <div class="band-head">
@@ -183,12 +135,12 @@
         <article class="clip">
           <button class="clip-frame" type="button"
                   data-src="assets/clips/summon-wheel.mp4"
-                  data-caption="Holding Ctrl+Alt on an empty desktop. The wheel opens centred on the cursor, already carrying your apps.">
+                  data-caption="Holding the chord on an empty desktop — Ctrl+Alt here, whatever you set it to on yours. The wheel opens centred on the cursor, already carrying your apps.">
             <video muted loop playsinline preload="none" poster="assets/clips/summon-wheel.jpg"
                    aria-label="An empty desktop; the wheel opens under the cursor showing app slices">
               <source src="assets/clips/summon-wheel.mp4" type="video/mp4">
             </video>
-            <span class="clip-tag">Hold Ctrl+Alt</span>
+            <span class="clip-tag">Hold the chord</span>
             <span class="clip-expand" aria-hidden="true">Expand</span>
           </button>
           <h3>The wheel opens where you are</h3>
@@ -380,22 +332,6 @@
   </section>
 
   <!-- ── Themes ──────────────────────────────────────────────────────── -->
-  <section class="band band-alt" id="themes">
-    <div class="shell">
-      <div class="band-head">
-        <h2>Four themes, twelve keys</h2>
-        <p class="band-spec">Paste into <code>config.json</code> → tray → Reload config</p>
-      </div>
-      <p class="band-lede">
-        Every colour in the wheel is one of twelve keys, all editable in Settings → Appearance.
-        Pick one and this page changes with the wheel above.
-      </p>
-
-      <div class="theme-grid" id="themeGrid"></div>
-    </div>
-  </section>
-
-  <!-- ── Trigger ─────────────────────────────────────────────────────── -->
   <section class="band" id="trigger">
     <div class="shell">
       <div class="band-head">
@@ -487,58 +423,22 @@
   </section>
 
   <!-- ── Icons ───────────────────────────────────────────────────────── -->
-  <section class="band band-tight" id="icons">
-    <div class="shell">
-      <div class="band-head">
-        <h2>Nothing bundled</h2>
-        <p class="band-spec">Segoe Fluent Icons · already on your machine</p>
-      </div>
-      <div class="glyph-grid">
-        <div class="glyph"><i>&#xE720;</i><span>Dictate</span><code>E720</code></div>
-        <div class="glyph"><i>&#xE722;</i><span>Screenshot</span><code>E722</code></div>
-        <div class="glyph"><i>&#xE70F;</i><span>Quick note</span><code>E70F</code></div>
-        <div class="glyph"><i>&#xE916;</i><span>Timer</span><code>E916</code></div>
-        <div class="glyph"><i>&#xE8EF;</i><span>Calculator</span><code>E8EF</code></div>
-        <div class="glyph"><i>&#xE790;</i><span>Colour</span><code>E790</code></div>
-        <div class="glyph"><i>&#xE71E;</i><span>Magnifier</span><code>E71E</code></div>
-        <div class="glyph"><i>&#xE945;</i><span>Caffeine</span><code>E945</code></div>
-        <div class="glyph"><i>&#xE706;</i><span>Focus dim</span><code>E706</code></div>
-        <div class="glyph"><i>&#xE8C8;</i><span>Clipboard</span><code>E8C8</code></div>
-        <div class="glyph"><i>&#xE8F1;</i><span>Shelf</span><code>E8F1</code></div>
-        <div class="glyph"><i>&#xE90F;</i><span>Tools</span><code>E90F</code></div>
-        <div class="glyph"><i>&#xE770;</i><span>System</span><code>E770</code></div>
-        <div class="glyph"><i>&#xE72E;</i><span>Lock</span><code>E72E</code></div>
-        <div class="glyph"><i>&#xE7E8;</i><span>Sleep</span><code>E7E8</code></div>
-        <div class="glyph"><i>&#xE767;</i><span>Volume</span><code>E767</code></div>
-        <div class="glyph"><i>&#xE701;</i><span>Wi-Fi</span><code>E701</code></div>
-        <div class="glyph"><i>&#xE9D9;</i><span>Task mgr</span><code>E9D9</code></div>
-        <div class="glyph"><i>&#xE713;</i><span>Settings</span><code>E713</code></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Waitlist ────────────────────────────────────────────────────── -->
-  <section class="band waitlist-band" id="waitlist">
-    <div class="shell waitlist">
-      <div class="waitlist-copy">
-        <p class="eyebrow">Not out yet</p>
-        <h2>One email, the day it ships</h2>
+  <section class="band form-band" id="get">
+    <div class="shell form-split">
+      <div class="form-copy">
+        <p class="eyebrow">Out now</p>
+        <h2>On the Microsoft Store</h2>
         <p>
-          Gola is in Microsoft Store certification. Leave an address and you get a single message when
-          it is live. No list, no follow-ups, and the address is deleted once that mail goes out.
+          Windows 10 and 11. The Store build is signed by Microsoft, so it installs without a
+          SmartScreen argument. No account, no telemetry, no servers.
         </p>
       </div>
 
-      <form class="waitlist-form" id="waitlistForm" novalidate>
-        <label class="waitlist-label" for="waitlistEmail">Email address</label>
-        <div class="waitlist-row">
-          <input class="waitlist-input" type="email" id="waitlistEmail" name="email"
-                 placeholder="you@example.com" autocomplete="email" required
-                 aria-describedby="waitlistStatus">
-          <button class="btn btn-accent" type="submit">Notify me</button>
-        </div>
-        <p class="waitlist-status" id="waitlistStatus" role="status" aria-live="polite"></p>
-      </form>
+      <div class="form-actions">
+        <a class="btn btn-accent" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site">
+          Get it on the Microsoft Store
+        </a>
+      </div>
     </div>
   </section>
 
@@ -567,7 +467,7 @@
         <details class="faq-item">
           <summary>When can I get it?</summary>
           <div class="faq-body">
-            <p>It is in Microsoft Store certification. There is no public build yet and no date worth promising, so: soon, and you will hear. <a href="#waitlist">Join the waitlist</a> for exactly one email on the day.</p>
+            <p>Now — it is <a href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-faq">on the Microsoft Store</a> for Windows 10 and 11. Buying through the Store means the build is signed by Microsoft and updates arrive on their own.</p>
           </div>
         </details>
 
@@ -590,6 +490,16 @@
           <div class="faq-body">
             <p>Settings → Keymap takes any combination of Back, Forward and Middle. They work as toggles too: hold and flick, or tap to leave the wheel open for a click.</p>
             <p>For a trackpad, pick Middle, then set Windows → Bluetooth &amp; devices → Touchpad → Three-finger gestures → Taps to "Middle mouse button".</p>
+            <p>Gola takes the button over, so it stops doing browser back/forward. Middle is the wheel press, and taking it over also stops middle-click opening links in a new tab.</p>
+          </div>
+        </details>
+
+        <details class="faq-item">
+          <summary>Can I use the extra buttons on my mouse?</summary>
+          <div class="faq-body">
+            <p>Not as mouse buttons. Back, Forward and Middle are the only three on offer, and that is a Windows limit rather than a Gola one: the mouse model has five buttons — left, right, middle, X1 and X2 — and there is no message for a sixth. A gesture button, a thumb-wheel click or buttons 6–8 on a gaming mouse never reach the operating system as mouse input; the vendor driver keeps them.</p>
+            <p>To use one anyway, give it a <b>Keystroke assignment</b> in Logi Options+ or the equivalent vendor software, then set that keystroke as the chord in Settings → Keymap.</p>
+            <p>The summon is hold-to-open, release-to-commit, so the assignment has to send key-down when the button goes down and key-up when it is released. Logi Options+ keystroke assignments do. Some remapping tools send a single tap instead, which opens the wheel and closes it again immediately — that is the remap, not Gola.</p>
           </div>
         </details>
 
@@ -623,6 +533,43 @@
     </div>
   </section>
 
+  <!-- ── Feedback ────────────────────────────────────────────────────── -->
+  <section class="band form-band" id="feedback">
+    <div class="shell">
+      <div class="feedback-card">
+        <span class="feedback-mark" aria-hidden="true">
+          <svg width="46" height="46" viewBox="0 0 32 32">
+            <path d="M25.98 10.24 A11.52 11.52 0 1 1 16.00 4.48" fill="none"
+                  stroke="url(#aperture)" stroke-width="7.04" stroke-linecap="round"/>
+          </svg>
+        </span>
+
+        <p class="eyebrow">Feedback &amp; requests</p>
+        <h2 class="feedback-title">Tell me what you think</h2>
+        <p class="feedback-sub">Bugs, ideas, feature requests. It goes straight to me.</p>
+
+        <form id="feedbackForm" novalidate>
+          <div class="seg" role="group" aria-label="What kind of message this is">
+            <button type="button" class="seg-btn is-on" aria-pressed="true"  data-kind="feedback">Feedback</button>
+            <button type="button" class="seg-btn"       aria-pressed="false" data-kind="feature">Feature</button>
+            <button type="button" class="seg-btn"       aria-pressed="false" data-kind="bug">Bug</button>
+          </div>
+
+          <label class="sr-only" for="feedbackMessage">Your message</label>
+          <textarea class="feedback-input" id="feedbackMessage" name="message" rows="6" required
+                    placeholder="What&#39;s on your mind?" aria-describedby="feedbackStatus"></textarea>
+
+          <label class="sr-only" for="feedbackEmail">Email address</label>
+          <input class="feedback-input" type="email" id="feedbackEmail" name="email"
+                 placeholder="Email (optional, if you want a reply)" autocomplete="email">
+
+          <button class="btn btn-accent feedback-send" type="submit" id="feedbackSend">Send feedback</button>
+          <p class="form-status" id="feedbackStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <footer class="foot">
@@ -632,7 +579,7 @@
       <p class="foot-sub">C# .NET 8 and WPF. Packaged as MSIX. Lives in the tray.</p>
     </div>
     <nav class="foot-links" aria-label="Footer">
-      <a href="#waitlist">Waitlist</a>
+      <a href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-footer">Microsoft Store</a>
       <a href="mailto:gsl456789@gmail.com">gsl456789@gmail.com</a>
       <a href="https://gist.github.com/gsl0001/0c2ba872f82c192507a5e0ded852b368" target="_blank" rel="noopener">Privacy policy</a>
     </nav>

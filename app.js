@@ -7,10 +7,10 @@
    the app.
    ═══════════════════════════════════════════════════════════════════════ */
 
-/* Waitlist delivery. Point this at anything that accepts a POST of {email}.
+/* Feedback delivery. Point this at anything that accepts a POST of {message, email}.
    Blank it and the form opens a prefilled email instead, needing no backend. */
-const WAITLIST_ENDPOINT = 'https://formspree.io/f/mykrrjad';
-const WAITLIST_MAILTO = 'gsl456789@gmail.com';
+const FEEDBACK_ENDPOINT = 'https://formspree.io/f/mykrrjad';
+const FEEDBACK_MAILTO = 'gsl456789@gmail.com';
 
 /* ── Themes — config.json "theme" blocks, verbatim ──────────────────── */
 
@@ -158,7 +158,9 @@ function apertureSvg(size, stroke) {
 function initThemes() {
   const dots = document.getElementById('themeDots');
   const grid = document.getElementById('themeGrid');
-  if (!dots || !grid) return;
+  // The dots live in the topbar and the grid in a page section, so the grid can legitimately be
+  // absent. Requiring both used to disable the topbar switcher the moment that section went.
+  if (!dots) return;
 
   THEMES.forEach(theme => {
     const k = theme.keys;
@@ -194,7 +196,7 @@ function initThemes() {
       </button>
       <pre class="theme-json">${themeJson(theme)}</pre>`;
     card.querySelector('.theme-pick').addEventListener('click', () => applyTheme(theme));
-    grid.appendChild(card);
+    grid?.appendChild(card);
   });
 
   let saved = null;
@@ -216,29 +218,43 @@ const G = {
   dwellToFan: 350
 };
 
+/* Slice artwork, drawn rather than typed. The sections used to render Segoe Fluent codepoints,
+   which exist only on Windows - every visitor on a phone or a Mac got tofu boxes on the one
+   element this page is built around. These are plain paths on a 24x24 grid, so they render
+   everywhere and need no font. Only the sections need one: app slices
+   render the real artwork, pulled off this machine by the same shell call the app itself uses. */
+const ICONS = {
+  power:    'M12 3.5v7.5M7.6 6.6a7.5 7.5 0 1 0 8.8 0',
+  wrench:   'M17.2 3.4a4.6 4.6 0 0 0-4.3 6.2L3.3 19.3l1.6 1.6 9.7-9.6a4.6 4.6 0 1 0 2.6-7.9z',
+  tray:     'M3.8 13.2h4.3l1.5 2.8h4.8l1.5-2.8h4.3M3.8 13.2l2.6-7.4h11.2l2.6 7.4v4.6a2 2 0 0 1-2 2H5.8a2 2 0 0 1-2-2z'
+};
+
 const ITEMS = [
   {
-    label: 'Claude', kind: 'app', mono: 'C', windows: 3,
+    label: 'Claude', kind: 'app', art: 'claude', windows: 3,
     fan: ['release notes', 'Gola — docs', 'store listing', 'New window']
   },
-  { label: 'ChatGPT', kind: 'app', mono: 'G', windows: 0, fan: ['Launch ChatGPT'] },
-  { label: 'Antigravity', kind: 'app', mono: 'A', windows: 0, fan: ['Launch Antigravity'] },
-  { label: 'Edge', kind: 'app', mono: 'E', windows: 2, fan: ['Partner Center', 'gola site', 'New window'] },
-  { label: 'Files', kind: 'app', mono: 'F', windows: 2, fan: ['Documents', 'Downloads', 'New window'] },
-  { label: 'Terminal', kind: 'app', mono: 'T', windows: 0, fan: ['Launch Terminal'] },
+  { label: 'ChatGPT', kind: 'app', art: 'chatgpt', windows: 0, fan: ['Launch ChatGPT'] },
+  { label: 'Antigravity', kind: 'app', art: 'antigravity', windows: 0, fan: ['Launch Antigravity'] },
+  { label: 'Edge', kind: 'app', art: 'edge', windows: 2, fan: ['Partner Center', 'gola site', 'New window'] },
+  { label: 'Files', kind: 'app', art: 'files', windows: 2, fan: ['Documents', 'Downloads', 'New window'] },
+  { label: 'Terminal', kind: 'app', art: 'terminal', windows: 0, fan: ['Launch Terminal'] },
   {
-    label: 'System', kind: 'section', glyph: '\uE770',
+    label: 'System', kind: 'section', icon: 'power',
     fan: ['Lock', 'Sleep', 'Volume', 'Wi-Fi', 'Task mgr', 'Settings']
   },
   {
-    label: 'Tools', kind: 'section', glyph: '\uE90F',
+    label: 'Tools', kind: 'section', icon: 'wrench',
     fan: ['Timer', 'Calculator', 'Colour', 'Magnifier', 'Caffeine', 'Focus dim']
   },
   {
-    label: 'Shelf', kind: 'section', glyph: '\uE8F1',
+    label: 'Shelf', kind: 'section', icon: 'tray',
     fan: ['ship-notes.md', 'IMG-2213.jpg', 'VOICE-2213.ogg', 'Open Shelf']
   }
 ];
+
+/* Slice tile and the artwork inside it, in wheel units. */
+const TILE = 42, ART = 27;
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const STEP = 360 / ITEMS.length;
@@ -289,20 +305,38 @@ function initWheel() {
     const path = el('path', { class: 'w-slice', d: sector(a0, a1, G.innerIn, G.innerOut) });
     g.appendChild(path);
 
-    const [gx, gy] = pol(132, mid);
-    if (item.kind === 'app') {
-      g.appendChild(el('text', { class: 'w-glyph', x: gx, y: gy, style: 'font-family:var(--display);font-weight:700;font-size:19px' }, item.mono));
+    /* Three rows, the same as the shipping wheel: a rounded tile holding the icon, the label
+       under it, then a status line - a running dot and window count for an app, the word
+       "section" for a section. Apps show their real artwork, pulled off this machine by the
+       same shell call the app itself uses; sections keep a drawn white glyph, which is what
+       the app draws for them too. */
+    /* One anchor per slice, then everything stacks vertically from it in screen space - which
+       is what the shipping wheel does. Offsetting radially instead puts the label beside the
+       tile on the left and right slices rather than under it. */
+    const [ax, ay] = pol(148, mid);
+    g.appendChild(el('rect', {
+      class: 'w-tile', x: ax - TILE / 2, y: ay - 34, width: TILE, height: TILE, rx: 11
+    }));
+
+    if (item.art) {
+      g.appendChild(el('image', {
+        class: 'w-art', href: `assets/icons/apps/${item.art}.png`,
+        x: ax - ART / 2, y: ay - 34 + (TILE - ART) / 2, width: ART, height: ART
+      }));
     } else {
-      g.appendChild(el('text', { class: 'w-glyph', x: gx, y: gy }, item.glyph));
+      // The drawn glyphs live on a 24-wide grid, so shift by half that to centre them in the tile.
+      const art = el('g', { class: 'w-icon', transform: `translate(${(ax - 12).toFixed(2)} ${(ay - 34 + (TILE - 24) / 2).toFixed(2)})` });
+      art.appendChild(el('path', { d: ICONS[item.icon] }));
+      g.appendChild(art);
     }
 
-    const [lx, ly] = pol(163, mid);
-    g.appendChild(el('text', { class: 'w-label', x: lx, y: ly }, item.label));
+    g.appendChild(el('text', { class: 'w-label', x: ax, y: ay + 16 }, item.label));
 
-    if (item.windows > 0) {
-      const [dx, dy] = pol(182, mid);
-      g.appendChild(el('circle', { class: 'w-dot', cx: dx - 7, cy: dy, r: 3.2 }));
-      g.appendChild(el('text', { class: 'w-count', x: dx + 6, y: dy }, String(item.windows)));
+    if (item.kind === 'section') {
+      g.appendChild(el('text', { class: 'w-sub', x: ax, y: ay + 30 }, 'section'));
+    } else if (item.windows > 0) {
+      g.appendChild(el('circle', { class: 'w-dot', cx: ax - 7, cy: ay + 30, r: 3.2 }));
+      g.appendChild(el('text', { class: 'w-count', x: ax + 6, y: ay + 30 }, String(item.windows)));
     }
 
     body.appendChild(g);
@@ -653,31 +687,58 @@ function initFaq() {
   });
 }
 
-/* ── Waitlist ───────────────────────────────────────────────────────── */
+/* ── Feedback ───────────────────────────────────────────── */
 
-function initWaitlist() {
-  const form = document.getElementById('waitlistForm');
+function initFeedback() {
+  const form = document.getElementById('feedbackForm');
   if (!form) return;
-  const input = document.getElementById('waitlistEmail');
-  const status = document.getElementById('waitlistStatus');
-  const button = form.querySelector('button[type="submit"]');
+  const message = document.getElementById('feedbackMessage');
+  const email = document.getElementById('feedbackEmail');
+  const status = document.getElementById('feedbackStatus');
+  const button = document.getElementById('feedbackSend');
+  const segs = [...form.querySelectorAll('.seg-btn')];
 
-  function report(text, kind) {
+  // feedback | feature | bug. Drives the mail subject, so it has to survive to submit time.
+  let kind = 'feedback';
+  const SEND_LABEL = { feedback: 'Send feedback', feature: 'Send request', bug: 'Send report' };
+
+  segs.forEach(btn => btn.addEventListener('click', () => {
+    kind = btn.dataset.kind;
+    segs.forEach(b => {
+      const on = b === btn;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
+    });
+    button.textContent = SEND_LABEL[kind];
+  }));
+
+  function report(text, tone) {
     status.textContent = text;
-    status.className = 'waitlist-status' + (kind ? ' is-' + kind : '');
+    status.className = 'form-status' + (tone ? ' is-' + tone : '');
   }
 
   form.addEventListener('submit', ev => {
     ev.preventDefault();
-    const email = input.value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
-      report('That address does not look complete. Check it and try again.', 'bad');
-      input.focus();
+    const body = message.value.trim();
+    const from = email.value.trim();
+
+    // The message is the point; the address is optional, so it is only checked when given.
+    if (body.length < 4) {
+      report('Say a little more and I can actually act on it.', 'bad');
+      message.focus();
+      return;
+    }
+    if (from && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(from)) {
+      report('That address does not look complete. Clear it or correct it.', 'bad');
+      email.focus();
       return;
     }
 
-    if (!WAITLIST_ENDPOINT) {
-      window.location.href = `mailto:${WAITLIST_MAILTO}?subject=Gola%20waitlist&body=${encodeURIComponent(email)}`;
+    const subject = `Gola ${kind}`;
+
+    if (!FEEDBACK_ENDPOINT) {
+      window.location.href =
+        `mailto:${FEEDBACK_MAILTO}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
       report('Opening your mail app.', 'ok');
       return;
     }
@@ -685,18 +746,26 @@ function initWaitlist() {
     button.disabled = true;
     report('Sending…');
 
-    fetch(WAITLIST_ENDPOINT, {
+    fetch(FEEDBACK_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({
+        message: body,
+        email: from || '(not given)',
+        kind,
+        // Formspree reads _subject as the subject of the mail it sends on.
+        _subject: subject
+      })
     })
       .then(res => {
         if (!res.ok) throw new Error(String(res.status));
         form.reset();
-        report('You are on the list. One email, the day it ships.', 'ok');
+        report(from ? 'Landed — I will reply.' : 'Landed. Thank you.', 'ok');
       })
       .catch(() => {
-        report(`That did not go through. Email ${WAITLIST_MAILTO} and you will be added by hand.`, 'bad');
+        // Covers the monthly quota running out as well as a network failure: either way the
+        // person keeps their words instead of losing them to a dead form.
+        report(`That did not go through. Email ${FEEDBACK_MAILTO} instead — it reaches the same place.`, 'bad');
       })
       .finally(() => { button.disabled = false; });
   });
@@ -708,5 +777,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initClips();
   initChord();
   initFaq();
-  initWaitlist();
+  initFeedback();
 });
