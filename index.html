@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gola — radial launcher for Windows</title>
-  <meta name="description" content="Hold a chord you choose — or a mouse button — and a frosted wheel opens under your cursor: your apps, their live windows, ten tools and the system controls. Slide to a slice, let go.">
-  <meta name="theme-color" content="#08080C">
+  <title>Gola — a stream deck under your cursor</title>
+  <meta name="description" content="Hold a chord and a wheel opens under your cursor: your apps, their live windows, whatever's playing, ten tools and the system controls. Slide, let go, done.">
+  <meta name="theme-color" content="#0B0B10">
   <link rel="icon" type="image/png" href="assets/icons/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
   <link rel="stylesheet" href="styles.css">
 
-  <meta property="og:title" content="Gola — radial launcher for Windows">
-  <meta property="og:description" content="Hold a chord, a wheel opens under your cursor: apps, live windows, quick tools. Let go. Done.">
+  <meta property="og:title" content="Gola — a stream deck under your cursor">
+  <meta property="og:description" content="Hold a chord, a wheel opens under your cursor: apps, live windows, media controls, quick tools. Let go. Done.">
   <meta property="og:type" content="website">
-  <meta property="og:image" content="assets/trailer/gola-trailer.jpg">
+  <meta property="og:image" content="assets/screenshots/media-core-105.png">
 </head>
 <body>
 
@@ -34,539 +34,249 @@
       </svg>
       <span class="mark-word">Gola</span>
     </a>
-
-    <nav class="topnav" aria-label="Sections">
-      <a href="#wheel">The wheel</a>
-      <a href="#clips">Recordings</a>
-      <a href="#features">Features</a>
-      <a href="#privacy">Privacy</a>
-      <a href="#faq">FAQ</a>
-      <a href="#feedback">Feedback</a>
-    </nav>
-
-    <div class="theme-switch" role="group" aria-label="Theme">
-      <span class="theme-switch-label">Theme</span>
-      <div class="theme-dots" id="themeDots"></div>
-    </div>
-
-    <a class="btn btn-accent topbar-cta" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site">Get it</a>
+    <a class="btn btn-accent" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site">Get it on the Store</a>
   </div>
 </header>
 
 <main id="main">
 
-  <!-- ── Hero: the wheel is the argument ─────────────────────────────── -->
+  <!-- Hero: the deck is the argument -->
   <section class="hero" id="top">
-    <div class="shell hero-in" id="wheel">
+    <div class="shell hero-in">
       <div class="hero-copy">
-        <p class="eyebrow">Radial launcher · Windows 10 &amp; 11</p>
-        <h1 class="hero-title">Hold.<br>Flick.<br><span class="hero-title-accent">Let go.</span></h1>
-        <p class="hero-lede">
-          Hold a chord you choose — or a mouse button — and a wheel opens under your cursor with
-          the apps you curate, their live windows, ten tools and the system controls. One gesture,
-          no window to find, no trip to the taskbar.
+        <p class="eyebrow">Windows 10 &amp; 11 · lives in the tray</p>
+        <h1>A stream deck<br>under your cursor.</h1>
+        <p class="lede">
+          Hold a chord — or a mouse button — and a wheel opens where you're pointing:
+          the apps you curate, their live windows, whatever's playing, ten tools and
+          the system controls. Slide to a slice, let go. Done.
         </p>
-
         <div class="hero-actions">
           <a class="btn btn-accent" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site">Get it on the Microsoft Store</a>
-          <a class="btn btn-quiet" href="#clips">Watch it run</a>
         </div>
-        <p class="hero-note">On the Microsoft Store. No account, no telemetry, no servers.</p>
+        <p class="hero-note">No account. No telemetry. No servers.</p>
       </div>
-
-      <!-- Signature: the real wheel, at the real geometry -->
-      <div class="wheel-stage" id="wheelStage" role="group"
-           aria-label="Interactive demonstration of the Gola wheel. Hold Control and Alt, or press and hold here, then move to a slice and release."
-           aria-describedby="readout">
-        <div class="wheel-hint">
-          <span class="wheel-hint-keys"><kbd>Ctrl</kbd><kbd>Alt</kbd></span>
-          <span class="wheel-hint-text">Hold to open the wheel — or press and hold here</span>
-        </div>
-        <svg class="wheel-svg" id="wheelSvg" viewBox="-310 -310 620 620" aria-hidden="true"></svg>
-      </div>
-    </div>
-
-    <div class="shell wheel-rail">
-      <div class="readout" aria-live="polite" id="readout">
-        <p class="readout-state" id="readoutState">Idle</p>
-        <p class="readout-target" id="readoutTarget">Nothing under the cursor</p>
-        <p class="readout-detail" id="readoutDetail">
-          The wheel sits closed in the tray until you hold the chord.
-        </p>
-      </div>
-
-      <ol class="rail-steps">
-        <li><b>Hold</b> the chord. The wheel opens centred on the cursor.</li>
-        <li><b>Flick</b> to a slice. Dwell and its windows fan onto the outer ring.</li>
-        <li><b>Release</b> on what you want. Release outside and nothing happens.</li>
-      </ol>
-
-      <div class="rail-spec">
-        <dl class="spec">
-          <div><dt>Diameter</dt><dd>620&nbsp;px</dd></div>
-          <div><dt>Hub / inner / fan</dt><dd>66 · 100–196 · 208–296</dd></div>
-          <div><dt>Slice</dt><dd>40°, 2.5° gap</dd></div>
-          <div><dt>Summon / dwell</dt><dd>130 · 350&nbsp;ms</dd></div>
-        </dl>
-        <p class="rail-foot">Shipping <code>GeometryConfig</code> defaults.</p>
-      </div>
-    </div>
-
-    <div class="shell keycue">
-      <span><kbd>1</kbd>–<kbd>9</kbd> pick a slice directly</span>
-      <span><kbd>Esc</kbd> closes</span>
-      <span>Dwell in the hub to go back up</span>
+      <figure class="hero-shot">
+        <img src="assets/screenshots/media-core-105.png"
+             alt="The Gola wheel open over a desktop: app slices around a centre hub playing a track, with play controls, a volume ring and a timeline"
+             width="1920" height="1080" fetchpriority="high">
+      </figure>
     </div>
   </section>
 
-  <!-- ── The four things on the inner ring ───────────────────────────── -->
-  <section class="band band-alt" id="clips">
+  <!-- The one gesture -->
+  <section class="band" id="gesture">
     <div class="shell">
       <div class="band-head">
-        <h2>See it running</h2>
-        <p class="band-spec">Screen captures · Windows 11 · nothing sped up</p>
+        <h2>One gesture, held not clicked</h2>
+        <p class="band-spec">hold · flick · release</p>
       </div>
-      <p class="band-lede">
-        Cropped to the wheel so you can read it, and otherwise untouched. Select a clip to watch it full size.
-      </p>
-
-      <div class="clip-grid">
-
-        <article class="clip">
-          <button class="clip-frame" type="button"
-                  data-src="assets/clips/summon-wheel.mp4"
-                  data-caption="Holding the chord on an empty desktop — Ctrl+Alt here, whatever you set it to on yours. The wheel opens centred on the cursor, already carrying your apps.">
-            <video muted loop playsinline preload="none" poster="assets/clips/summon-wheel.jpg"
-                   aria-label="An empty desktop; the wheel opens under the cursor showing app slices">
-              <source src="assets/clips/summon-wheel.mp4" type="video/mp4">
-            </video>
-            <span class="clip-tag">Hold the chord</span>
-            <span class="clip-expand" aria-hidden="true">Expand</span>
-          </button>
-          <h3>The wheel opens where you are</h3>
-          <p>No window to find and no launcher to focus. It appears centred on the cursor, frosted over whatever was behind it.</p>
-          <p class="clip-meta">2.7s · silent loop</p>
-        </article>
-
-        <article class="clip">
-          <button class="clip-frame" type="button"
-                  data-src="assets/clips/window-fanout-2.mp4"
-                  data-caption="Pointing at an app slice fans that app's own windows onto the outer ring, each one labelled and previewed live.">
-            <video muted loop playsinline preload="none" poster="assets/clips/window-fanout-2.jpg"
-                   aria-label="The wheel fanning out one app's open windows onto the outer ring">
-              <source src="assets/clips/window-fanout-2.mp4" type="video/mp4">
-            </video>
-            <span class="clip-tag">Outer ring</span>
-            <span class="clip-expand" aria-hidden="true">Expand</span>
-          </button>
-          <h3>Live windows, not a list of names</h3>
-          <p>Each window on the fan is a real preview with its title on a scrim. Slide onto one and let go to focus it. <code>New window</code> is always last.</p>
-          <p class="clip-meta">2.6s · silent loop</p>
-        </article>
-
-        <article class="clip">
-          <button class="clip-frame" type="button"
-                  data-src="assets/clips/tools-popovers.mp4"
-                  data-caption="The Tools ring, then the timer and the calculator opening as popovers that stay put after the wheel closes.">
-            <video muted loop playsinline preload="none" poster="assets/clips/tools-popovers.jpg"
-                   aria-label="The Tools ring fanned out, then a timer popover and a calculator popover">
-              <source src="assets/clips/tools-popovers.mp4" type="video/mp4">
-            </video>
-            <span class="clip-tag">Timer · Calculator</span>
-            <span class="clip-expand" aria-hidden="true">Expand</span>
-          </button>
-          <h3>Tools open in place</h3>
-          <p>A popover is a card, not a window: no taskbar entry, no alt-tab stop. Esc or a click elsewhere closes it, the pin keeps it floating.</p>
-          <p class="clip-meta">7.6s · silent loop</p>
-        </article>
-
-        <article class="clip">
-          <button class="clip-frame" type="button"
-                  data-src="assets/clips/system-fanout.mp4"
-                  data-caption="Pointing at the System section fans out Settings, Task Manager, Wi-Fi, Volume, Sleep and Lock as labelled actions.">
-            <video muted loop playsinline preload="none" poster="assets/clips/system-fanout.jpg"
-                   aria-label="The System section fanning out six labelled actions">
-              <source src="assets/clips/system-fanout.mp4" type="video/mp4">
-            </video>
-            <span class="clip-tag">System</span>
-            <span class="clip-expand" aria-hidden="true">Expand</span>
-          </button>
-          <h3>Sections work exactly like apps</h3>
-          <p>Point at one and its actions appear on the outer ring. Six system controls without hunting through the tray or the Start menu.</p>
-          <p class="clip-meta">3.8s · silent loop</p>
-        </article>
-
-        <article class="clip">
-          <button class="clip-frame" type="button"
-                  data-src="assets/clips/settings-preview.mp4"
-                  data-caption="Settings → Wheel. A live wheel sits beside the window and redraws as the size, label length and windows-per-fan change.">
-            <video muted loop playsinline preload="none" poster="assets/clips/settings-preview.jpg"
-                   aria-label="The Settings window beside a live wheel that redraws as the size preset changes">
-              <source src="assets/clips/settings-preview.mp4" type="video/mp4">
-            </video>
-            <span class="clip-tag">Live preview</span>
-            <span class="clip-expand" aria-hidden="true">Expand</span>
-          </button>
-          <h3>Tuned against a real wheel</h3>
-          <p>Settings keeps a working wheel on screen while you change it — five sizes, label length, and how deep each fan goes.</p>
-          <p class="clip-meta">5.5s · silent loop</p>
-        </article>
-
+      <div class="gesture-in">
+        <ol class="steps">
+          <li><span class="step-key">Hold</span> the chord — <kbd>Ctrl</kbd><kbd>Alt</kbd> to start, any mix of Ctrl, Alt, Shift and Win after that, or a mouse thumb button.</li>
+          <li><span class="step-key">Flick</span> to a slice. Dwell on an app and its windows fan onto the outer ring as live previews.</li>
+          <li><span class="step-key">Release</span> on what you want. Release outside the wheel and nothing happens.</li>
+        </ol>
+        <figure class="gesture-clip">
+          <video autoplay muted loop playsinline poster="assets/clips/summon-wheel.jpg"
+                 aria-label="An empty desktop; the wheel opens under the cursor showing app slices">
+            <source src="assets/clips/summon-wheel.mp4" type="video/mp4">
+          </video>
+          <figcaption>Real capture, nothing sped up.</figcaption>
+        </figure>
       </div>
     </div>
   </section>
 
-  <!-- ── Everything it does ──────────────────────────────────────────── -->
+  <!-- Feature blocks: one screenshot, one idea each -->
   <section class="band" id="features">
     <div class="shell">
-      <div class="band-head">
-        <h2>Everything on it</h2>
-        <p class="band-spec">Tray-resident · C# .NET 8 + WPF · MSIX</p>
-      </div>
 
-      <div class="feat-grid">
-
-        <article class="feat feat-wide">
-          <h3>Taskbar semantics, on a wheel</h3>
+      <article class="block">
+        <div class="block-copy">
+          <p class="eyebrow eyebrow-new">New in 1.0.5</p>
+          <h2>Whatever's playing lives in the hub</h2>
           <p>
-            App slices do what a taskbar button does, in one flick. Not running, release launches it.
-            One window, release focuses it immediately. Several, and they fan onto the outer ring as
-            live previews you slide onto. Minimised windows can't be captured, so they show the app
-            icon instead of a stale frame.
+            Spotify, browsers and native players all land in the wheel's centre: album art,
+            play/pause and track skip, a volume ring you drag or scroll, tap-to-scrub and
+            one-tap mute. Space and the arrow keys work while the wheel is open.
           </p>
-          <img src="assets/screenshots/store-3-files-fan.png" alt="File Explorer windows fanned out on the outer ring" loading="lazy" width="1920" height="1080">
-        </article>
+          <p class="fine">This update makes the controls reliable on Edge and Chrome playback.</p>
+        </div>
+        <figure class="block-shot">
+          <img src="assets/screenshots/media-hub-105.png"
+               alt="Close-up of the wheel's centre: track title and artist over album art, play controls, a volume ring with a knob, and a timeline"
+               loading="lazy" width="760" height="760">
+        </figure>
+      </article>
 
-        <article class="feat">
-          <h3>Ten popover tools</h3>
+      <article class="block block-flip">
+        <div class="block-copy">
+          <h2>Your windows, fanned out live</h2>
           <p>
-            Timer with a sweeping ring, calculator with a click-to-copy result, colour picker that
-            copies any pixel as hex, magnifier, clipboard history of the last twenty entries,
-            screenshot, quick note, caffeine, focus dim and dictation.
+            App slices behave like taskbar buttons, one flick earlier. Not running — release
+            launches it. One window — release focuses it. Several — they fan onto the outer
+            ring as previews you slide straight onto, with <code>New window</code> always last.
+            Green dots and counts show what's running at a glance.
           </p>
-          <img src="assets/screenshots/store-5-tools-fan.png" alt="The Tools ring showing ten utilities" loading="lazy" width="1920" height="1080">
-        </article>
+        </div>
+        <figure class="block-shot">
+          <img src="assets/screenshots/files-fan-105.png"
+               alt="The wheel with File Explorer's two windows fanned onto the outer ring beside a New window action"
+               loading="lazy" width="1920" height="1080">
+        </figure>
+      </article>
 
-        <article class="feat">
-          <h3>System controls</h3>
-          <p>Settings, Task Manager, Wi-Fi, Volume, Sleep and Lock, reached the same way as everything else.</p>
-          <img src="assets/screenshots/store-6-system-fan.png" alt="The System section fanned out with six actions" loading="lazy" width="1920" height="1080">
-        </article>
-
-        <article class="feat">
-          <h3>Shelf — a seven-day inbox</h3>
+      <article class="block">
+        <div class="block-copy">
+          <h2>Ten tools, no windows</h2>
           <p>
-            Files that landed today on the left, a live preview on the right: images, text, markdown
-            and code render inline, anything else shows its size. Enter opens, Delete archives,
-            Ctrl+F searches. It keeps the last seven days, so nothing vanishes at midnight.
+            Timer, calculator, colour picker, magnifier, clipboard history, screenshot,
+            quick note, caffeine, focus dim and dictation. Each opens as a popover —
+            no taskbar entry, no alt-tab stop. Esc closes it; the pin keeps it floating.
           </p>
-        </article>
+        </div>
+        <figure class="block-shot">
+          <img src="assets/screenshots/tools-fan-105.png"
+               alt="The Tools section fanned out on the wheel showing its utilities"
+               loading="lazy" width="1920" height="1080">
+        </figure>
+      </article>
 
-        <article class="feat">
-          <h3>Phone → PC, through your own bot</h3>
+      <article class="block block-flip">
+        <div class="block-copy">
+          <h2>System, one flick away</h2>
           <p>
-            Send a file, photo, link or note to a Telegram bot <em>you</em> created with
-            <code>@BotFather</code>, and it lands in the Inbox within seconds and appears in the Shelf.
-            The first sender to write is paired as owner; everyone else is ignored. Your token is
-            encrypted with DPAPI and removed from the config file.
+            Settings, Task Manager, Wi-Fi, Volume, Sleep and Lock, reached exactly like
+            everything else — no hunting through the tray or the Start menu.
           </p>
-        </article>
+        </div>
+        <figure class="block-shot">
+          <img src="assets/screenshots/system-fan-105.png"
+               alt="The System section fanned out with six labelled actions"
+               loading="lazy" width="1920" height="1080">
+        </figure>
+      </article>
 
-        <article class="feat">
-          <h3>Side dock</h3>
+      <article class="block">
+        <div class="block-copy">
+          <h2>Tuned against a real wheel</h2>
           <p>
-            A strip on the right edge holding what you parked — screenshots, saved notes, cards.
-            Left-click to reopen, right-click to bin. It hides itself when empty.
+            Settings keeps a live wheel beside the window that redraws as you change it:
+            five sizes, label length, fan depth, motion, themes. Everything writes straight
+            to <code>config.json</code> and applies immediately.
           </p>
-        </article>
+        </div>
+        <figure class="block-shot">
+          <img src="assets/screenshots/settings-105.png"
+               alt="The Gola Settings window beside a live preview wheel"
+               loading="lazy" width="1920" height="1080">
+        </figure>
+      </article>
 
-        <article class="feat">
-          <h3>Dictation, on your machine</h3>
-          <p>
-            Hold the chord over a text field, speak, and Gola types it where you were working.
-            A 141&nbsp;MB Whisper model downloads once, then it runs entirely offline. Off until you
-            turn it on, because it opens the microphone.
-          </p>
-        </article>
-
-        <article class="feat">
-          <h3>Global shortcuts</h3>
-          <p>
-            Bind any tool to a combination that works without the wheel. Click the box, press the
-            keys, done. A modifier is required, so a bare letter can never fire while you type.
-          </p>
-          <pre class="code">"hotkeys": {
-  "screenshot": "Ctrl+Shift+S",
-  "shelf": "Ctrl+Alt+B"
-}</pre>
-        </article>
-
-        <article class="feat">
-          <h3>App switcher</h3>
-          <p>
-            An <code>Apps ›</code> slice fans out your eight most recent windows in z-order. Flick to one,
-            release, and you are in it — alt-tab without the row of thumbnails.
-          </p>
-        </article>
-
-        <article class="feat">
-          <h3>Five item types</h3>
-          <p>The wheel takes more than apps. Each entry in <code>config.json</code> is one of five kinds, and shell commands run only after you approve each one by hand.</p>
-          <ul class="chip-list">
-            <li>app</li><li>tool</li><li>shell</li><li>snippet</li><li>submenu</li>
-          </ul>
-        </article>
-
-        <article class="feat feat-wide">
-          <h3>Settings that stay out of the way</h3>
-          <p>
-            Nine panes — General, Keymap, Wheel, Apps, Appearance, Motion, Tools, Voice, Advanced —
-            each writing straight to <code>config.json</code> and applying immediately. Five wheel sizes,
-            label length, fan depth, motion, and a live wheel redrawing beside every change.
-          </p>
-          <img src="assets/screenshots/store-7-settings.png" alt="The Gola Settings window" loading="lazy" width="1920" height="1080">
-        </article>
-
-      </div>
     </div>
   </section>
 
-  <!-- ── Themes ──────────────────────────────────────────────────────── -->
-  <section class="band" id="trigger">
+  <!-- The rest, compact -->
+  <section class="band band-alt" id="more">
     <div class="shell">
       <div class="band-head">
-        <h2>Pick your trigger</h2>
-        <p class="band-spec">Settings → Keymap</p>
+        <h2>Also on it</h2>
+        <p class="band-spec">all opt-in, all local</p>
       </div>
-
-      <div class="trigger-grid">
-        <div class="trigger-main">
-          <p class="trigger-line">Hold <kbd>Ctrl</kbd> <kbd>Alt</kbd></p>
-          <p>
-            Modifiers only — hold-flick-release needs a key that can be <em>held</em>. Click the chips
-            in Settings to build any combination of Ctrl, Alt, Shift and Win.
-          </p>
-          <div class="chord-chips" role="group" aria-label="Example chords">
-            <button class="chip is-on" type="button" data-mod="Ctrl">Ctrl</button>
-            <button class="chip is-on" type="button" data-mod="Alt">Alt</button>
-            <button class="chip" type="button" data-mod="Shift">Shift</button>
-            <button class="chip" type="button" data-mod="Win">Win</button>
-          </div>
-          <p class="trigger-preview" id="chordPreview">Hold <b>Ctrl + Alt</b></p>
-          <p class="note">
-            Ctrl+Alt is AltGr on some keyboard layouts. If typing gets strange, switch to Ctrl+Shift.
-          </p>
+      <div class="more-grid">
+        <div class="more">
+          <h3>Shelf</h3>
+          <p>A seven-day file inbox with previews, search and archive. Nothing vanishes at midnight.</p>
         </div>
-
-        <div class="trigger-side">
-          <h3>Mouse and trackpad</h3>
-          <p>
-            Back, Forward and Middle work as toggles — pick as many as you like, instead of or as well
-            as the chord. Hold and flick as usual, or tap and the wheel stays open for a click.
-          </p>
-          <p>
-            <b>Trackpad:</b> choose Middle, then set Windows → Touchpad → Three-finger gestures → Taps
-            to "Middle mouse button".
-          </p>
-          <p class="note">
-            Gola takes its trigger buttons over, so a thumb button stops doing browser back. Leave that
-            button on its stock action in your mouse software — a remapped macro never reaches Gola.
-          </p>
+        <div class="more">
+          <h3>Phone → PC</h3>
+          <p>Feed the Shelf from your phone through a Telegram bot <em>you</em> create. Your token is DPAPI-encrypted; there's no Gola server in the path.</p>
+        </div>
+        <div class="more">
+          <h3>Side dock</h3>
+          <p>Park screenshots, notes and cards on the right edge. Hides itself when empty.</p>
+        </div>
+        <div class="more">
+          <h3>Dictation</h3>
+          <p>Hold, speak, and it types into whatever you were working in. Whisper runs on your own machine — audio never leaves your PC. Off until you turn it on.</p>
+        </div>
+        <div class="more">
+          <h3>App switcher</h3>
+          <p>An <code>Apps ›</code> slice fans out your eight most recent windows — alt-tab as a flick.</p>
+        </div>
+        <div class="more">
+          <h3>Global shortcuts</h3>
+          <p>Bind any tool to a combination that works without the wheel. A modifier is required, so a bare letter can never fire while you type.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ── Privacy ─────────────────────────────────────────────────────── -->
-  <section class="band band-alt" id="privacy">
+  <!-- Privacy -->
+  <section class="band" id="privacy">
     <div class="shell">
       <div class="band-head">
         <h2>What it touches</h2>
-        <p class="band-spec">No account · no telemetry · no servers</p>
+        <p class="band-spec">no account · no telemetry · no servers</p>
       </div>
       <p class="band-lede">
-        A hold-and-flick launcher needs permissions that deserve a straight answer. Here is each one,
-        what it is for, and where the data stops.
+        A hold-and-flick launcher needs permissions that deserve a straight answer.
       </p>
-
-      <div class="touch-list">
-        <div class="touch">
-          <h3>Keyboard hook</h3>
-          <p>The only way Windows reports a key being <em>held</em>. Keystrokes are compared against your trigger and passed straight on — never recorded, never transmitted.</p>
-        </div>
-        <div class="touch">
-          <h3>Screen capture</h3>
-          <p>Draws the live window previews and the frosted backdrop. Images stay in memory on your machine.</p>
-        </div>
-        <div class="touch">
-          <h3>Microphone</h3>
-          <p>Only with dictation on, and only while you are dictating. Audio is transcribed locally and discarded.</p>
-        </div>
-        <div class="touch">
-          <h3>Clipboard</h3>
-          <p>Feeds the clipboard-history tool. The last twenty entries live in memory and are never written to disk.</p>
-        </div>
-        <div class="touch">
-          <h3>Network</h3>
-          <p>Two connections exist. The one-off speech-model download, and api.telegram.org if you set up your own bot. Nothing else.</p>
-        </div>
-        <div class="touch">
-          <h3>Your files</h3>
-          <p><code>%APPDATA%\Gola\</code> holds settings. <code>%USERPROFILE%\Gola\</code> holds screenshots, notes, Shelf files and the model.</p>
-        </div>
-      </div>
-
-      <p class="privacy-foot">
+      <dl class="touch-list">
+        <div><dt>Keyboard hook</dt><dd>The only way Windows reports a key being held. Keystrokes are compared against your trigger and passed straight on — never recorded, never transmitted.</dd></div>
+        <div><dt>Screen capture</dt><dd>Draws the live window previews and the frosted backdrop. Images stay in memory on your machine.</dd></div>
+        <div><dt>Microphone</dt><dd>Only with dictation on, and only while you're dictating. Transcribed locally, then discarded.</dd></div>
+        <div><dt>Clipboard</dt><dd>Feeds the clipboard-history tool. Last twenty entries, memory only.</dd></div>
+        <div><dt>Network</dt><dd>Two connections exist: the one-off speech-model download, and api.telegram.org only if you set up your own bot.</dd></div>
+        <div><dt>Your files</dt><dd><code>%APPDATA%\Gola\</code> holds settings; <code>%USERPROFILE%\Gola\</code> holds screenshots, notes and Shelf files.</dd></div>
+      </dl>
+      <p class="fine">
         Full detail in the <a href="https://gist.github.com/gsl0001/0c2ba872f82c192507a5e0ded852b368" target="_blank" rel="noopener">privacy policy</a>.
       </p>
     </div>
   </section>
 
-  <!-- ── Icons ───────────────────────────────────────────────────────── -->
-  <section class="band form-band" id="get">
-    <div class="shell form-split">
-      <div class="form-copy">
-        <p class="eyebrow">Out now</p>
-        <h2>On the Microsoft Store</h2>
-        <p>
-          Windows 10 and 11. The Store build is signed by Microsoft, so it installs without a
-          SmartScreen argument. No account, no telemetry, no servers.
-        </p>
-      </div>
-
-      <div class="form-actions">
-        <a class="btn btn-accent" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site">
-          Get it on the Microsoft Store
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── FAQ ─────────────────────────────────────────────────────────── -->
+  <!-- FAQ -->
   <section class="band band-alt" id="faq">
     <div class="shell">
       <div class="band-head">
         <h2>Questions this app attracts</h2>
-        <p class="band-spec">Type to filter</p>
       </div>
 
-      <input class="faq-search" type="search" id="faqSearch"
-             placeholder="spyware · antivirus · AltGr · trackpad · data · release"
-             aria-label="Filter questions">
-
-      <div class="faq-list" id="faqList">
-
-        <details class="faq-item">
-          <summary>Is Gola spyware?</summary>
-          <div class="faq-body">
-            <p><b>No.</b> It installs a system-wide keyboard hook, captures screen content for the window previews, and opens the microphone if you turn dictation on. Each of those is listed above with what it is for.</p>
-            <p>Keystrokes are compared against your trigger and passed straight on. Screen capture stays local. There is no account, no telemetry and no server to send anything to.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>When can I get it?</summary>
-          <div class="faq-body">
-            <p>Now — it is <a href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-faq">on the Microsoft Store</a> for Windows 10 and 11. Buying through the Store means the build is signed by Microsoft and updates arrive on their own.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Why did my antivirus flag it?</summary>
-          <div class="faq-body">
-            <p>Keyboard hooks, screen capture and launching configured commands are together a heuristic match for what antivirus engines watch for. All three are required for a hold-and-flick launcher to work at all. The Store build is signed by Microsoft.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>The wheel does nothing when I hold the chord</summary>
-          <div class="faq-body">
-            <p>Almost always a trigger conflict. Layouts that use <b>AltGr</b> — which Windows reports as Ctrl+Alt — collide with the default. Change it in Settings → Keymap to <kbd>Ctrl</kbd>+<kbd>Shift</kbd>.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Can I open it with the mouse, or a trackpad?</summary>
-          <div class="faq-body">
-            <p>Settings → Keymap takes any combination of Back, Forward and Middle. They work as toggles too: hold and flick, or tap to leave the wheel open for a click.</p>
-            <p>For a trackpad, pick Middle, then set Windows → Bluetooth &amp; devices → Touchpad → Three-finger gestures → Taps to "Middle mouse button".</p>
-            <p>Gola takes the button over, so it stops doing browser back/forward. Middle is the wheel press, and taking it over also stops middle-click opening links in a new tab.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Can I use the extra buttons on my mouse?</summary>
-          <div class="faq-body">
-            <p>Not as mouse buttons. Back, Forward and Middle are the only three on offer, and that is a Windows limit rather than a Gola one: the mouse model has five buttons — left, right, middle, X1 and X2 — and there is no message for a sixth. A gesture button, a thumb-wheel click or buttons 6–8 on a gaming mouse never reach the operating system as mouse input; the vendor driver keeps them.</p>
-            <p>To use one anyway, give it a <b>Keystroke assignment</b> in Logi Options+ or the equivalent vendor software, then set that keystroke as the chord in Settings → Keymap.</p>
-            <p>The summon is hold-to-open, release-to-commit, so the assignment has to send key-down when the button goes down and key-up when it is released. Logi Options+ keystroke assignments do. Some remapping tools send a single tap instead, which opens the wheel and closes it again immediately — that is the remap, not Gola.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>How do I add my own apps?</summary>
-          <div class="faq-body">
-            <p>Settings → Apps, or edit <code>config.json</code> directly and reload from the tray. One entry per slice:</p>
-            <pre class="code">{ "type": "app", "label": "Claude",
-  "path": "C:\\...\\Claude.exe",
-  "match": "claude" }</pre>
-            <p><code>match</code> is the process name, needed when the executable that owns the window differs from the one you launch. Store apps embed a version in their path, so Gola self-heals those when they update.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Where does Gola keep my data?</summary>
-          <div class="faq-body">
-            <p><code>%APPDATA%\Gola\</code> for settings, <code>%USERPROFILE%\Gola\</code> for screenshots, notes, Shelf files and the speech model. Nothing leaves the machine.</p>
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary>Does it need Telegram?</summary>
-          <div class="faq-body">
-            <p>No. The Shelf works on its own, watching your Inbox and Downloads folders. Telegram is an opt-in way to feed it from your phone, using a bot you create yourself — there is no Gola account or server in the path.</p>
-          </div>
-        </details>
-
-        <p class="faq-empty" id="faqEmpty" hidden>Nothing matches that. Try "antivirus" or "trackpad".</p>
-      </div>
+      <details class="faq">
+        <summary>Is Gola spyware?</summary>
+        <p><b>No.</b> It installs a keyboard hook, captures screen content for the previews, and opens the microphone only if you turn dictation on — each is listed above with what it's for. There is no account, no telemetry and no server to send anything to.</p>
+      </details>
+      <details class="faq">
+        <summary>Why did my antivirus flag it?</summary>
+        <p>Keyboard hooks, screen capture and launching configured commands are together a heuristic match for what antivirus engines watch for. All three are required for a hold-and-flick launcher to work at all. The Store build is signed by Microsoft.</p>
+      </details>
+      <details class="faq">
+        <summary>The wheel does nothing when I hold the chord</summary>
+        <p>Almost always a trigger conflict: layouts that use <b>AltGr</b> — which Windows reports as Ctrl+Alt — collide with the default. Change it in Settings → Keymap to <kbd>Ctrl</kbd>+<kbd>Shift</kbd>.</p>
+      </details>
+      <details class="faq">
+        <summary>Can I open it with the mouse, or a trackpad?</summary>
+        <p>Settings → Keymap takes any combination of Back, Forward and Middle — hold and flick, or tap to leave the wheel open for a click. For a trackpad, pick Middle, then set Windows → Touchpad → Three-finger gestures → Taps to "Middle mouse button". Gola takes the button over, so it stops doing browser back/forward.</p>
+        <p>Extra buttons on gaming mice never reach Windows as mouse input — give one a keystroke assignment in your mouse software and set that as the chord instead.</p>
+      </details>
+      <details class="faq">
+        <summary>Where does my data live?</summary>
+        <p><code>%APPDATA%\Gola\</code> for settings, <code>%USERPROFILE%\Gola\</code> for screenshots, notes, Shelf files and the speech model. Nothing leaves the machine.</p>
+      </details>
     </div>
   </section>
 
-  <!-- ── Feedback ────────────────────────────────────────────────────── -->
-  <section class="band form-band" id="feedback">
-    <div class="shell">
-      <div class="feedback-card">
-        <span class="feedback-mark" aria-hidden="true">
-          <svg width="46" height="46" viewBox="0 0 32 32">
-            <path d="M25.98 10.24 A11.52 11.52 0 1 1 16.00 4.48" fill="none"
-                  stroke="url(#aperture)" stroke-width="7.04" stroke-linecap="round"/>
-          </svg>
-        </span>
-
-        <p class="eyebrow">Feedback &amp; requests</p>
-        <h2 class="feedback-title">Tell me what you think</h2>
-        <p class="feedback-sub">Bugs, ideas, feature requests. It goes straight to me.</p>
-
-        <form id="feedbackForm" novalidate>
-          <div class="seg" role="group" aria-label="What kind of message this is">
-            <button type="button" class="seg-btn is-on" aria-pressed="true"  data-kind="feedback">Feedback</button>
-            <button type="button" class="seg-btn"       aria-pressed="false" data-kind="feature">Feature</button>
-            <button type="button" class="seg-btn"       aria-pressed="false" data-kind="bug">Bug</button>
-          </div>
-
-          <label class="sr-only" for="feedbackMessage">Your message</label>
-          <textarea class="feedback-input" id="feedbackMessage" name="message" rows="6" required
-                    placeholder="What&#39;s on your mind?" aria-describedby="feedbackStatus"></textarea>
-
-          <label class="sr-only" for="feedbackEmail">Email address</label>
-          <input class="feedback-input" type="email" id="feedbackEmail" name="email"
-                 placeholder="Email (optional, if you want a reply)" autocomplete="email">
-
-          <button class="btn btn-accent feedback-send" type="submit" id="feedbackSend">Send feedback</button>
-          <p class="form-status" id="feedbackStatus" role="status" aria-live="polite"></p>
-        </form>
+  <!-- Get it -->
+  <section class="band" id="get">
+    <div class="shell get-in">
+      <div>
+        <p class="eyebrow">Out now</p>
+        <h2>On the Microsoft Store</h2>
+        <p class="lede">Signed by Microsoft, updates arrive on their own, installs without a SmartScreen argument.</p>
       </div>
+      <a class="btn btn-accent btn-big" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-get">Get it on the Microsoft Store</a>
     </div>
   </section>
 
@@ -575,7 +285,7 @@
 <footer class="foot">
   <div class="shell foot-in">
     <div>
-      <p class="foot-title">Gola — radial launcher for Windows</p>
+      <p class="foot-title">Gola — a stream deck under your cursor</p>
       <p class="foot-sub">C# .NET 8 and WPF. Packaged as MSIX. Lives in the tray.</p>
     </div>
     <nav class="foot-links" aria-label="Footer">
@@ -586,14 +296,5 @@
   </div>
 </footer>
 
-<div class="lightbox" id="lightbox" hidden>
-  <div class="lightbox-in" role="dialog" aria-modal="true" aria-label="Clip viewer">
-    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close clip">×</button>
-    <video class="lightbox-video" id="lightboxVideo" controls muted loop playsinline></video>
-    <p class="lightbox-caption" id="lightboxCaption"></p>
-  </div>
-</div>
-
-<script src="app.js"></script>
 </body>
 </html>
