@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap">
-  <link rel="stylesheet" href="styles.css?v=107">
-  <link rel="preload" as="image" href="assets/v107/gola-film.jpg">
+  <link rel="stylesheet" href="styles.css?v=108">
+  <link rel="preload" as="image" href="assets/v107/gola-film-2.jpg">
 
   <meta property="og:title" content="Gola — the window you already have open">
   <meta property="og:description" content="A wheel under your cursor that switches to the window you already have open. No account, no telemetry, no servers.">
@@ -41,14 +41,14 @@
       <svg width="26" height="26" aria-hidden="true"><use href="#mark"/></svg>
       Gola
     </a>
-    <a class="btn btn-small" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-top">Get Gola</a>
+    <a class="btn btn-small" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-top">Try Gola free</a>
   </div>
 </header>
 
 <main id="main">
 
   <section class="hero" id="top">
-    <div class="shell">
+    <div class="shell hero-in">
       <div class="hero-copy">
         <p class="label">Windows 10 &amp; 11</p>
         <h1>The window you already have open.</h1>
@@ -56,15 +56,21 @@
           Hold <kbd>Ctrl</kbd><kbd>Alt</kbd> or a mouse button and a wheel opens under your cursor.
           Point at an app, its open windows fan out, and release on the one you meant.
         </p>
-        <div class="cta-row">
-          <a class="btn btn-big" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-hero">Get it on the Microsoft Store</a>
+        <div class="cta">
+          <a class="btn btn-big" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-hero">Try Gola free on the Microsoft Store</a>
+          <p class="price">Free trial, then <b>US$6.99 once</b>. No subscription.</p>
           <p class="trust"><span class="dot" aria-hidden="true"></span>Signed by Microsoft · no account · no telemetry</p>
         </div>
+        <ul class="facts" aria-label="Gola in numbers">
+          <li><b>8</b> themes</li>
+          <li><b>13</b> built-in tools</li>
+          <li><b>0</b> accounts or servers</li>
+        </ul>
       </div>
       <figure class="film lens">
-        <video autoplay muted loop playsinline controls preload="metadata" poster="assets/v107/gola-film.jpg"
+        <video autoplay muted loop playsinline controls preload="metadata" poster="assets/v107/gola-film-2.jpg"
                aria-label="Gola in use: the wheel opens under the cursor, apps launch, open windows fan out, music plays in the centre, tools pop out, and the eight themes cycle">
-          <source src="assets/v107/gola-film.mp4" type="video/mp4">
+          <source src="assets/v107/gola-film-2.mp4" type="video/mp4">
         </video>
       </figure>
     </div>
@@ -117,6 +123,10 @@
           </div>
         </article>
       </div>
+      <div class="cta cta-inline">
+        <a class="btn" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-features">Try Gola free</a>
+        <p class="price">Free trial, then US$6.99 once.</p>
+      </div>
     </div>
   </section>
 
@@ -136,6 +146,10 @@
         <li><img src="assets/v107/themes/porcelain.webp" width="400" height="400" loading="lazy" alt="">Porcelain</li>
         <li><img src="assets/v107/themes/pebble.webp" width="400" height="400" loading="lazy" alt="">Pebble</li>
       </ul>
+      <div class="cta cta-inline">
+        <a class="btn" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-themes">Try Gola free</a>
+        <p class="price">All eight themes are in the free trial.</p>
+      </div>
     </div>
   </section>
 
@@ -148,6 +162,10 @@
         <div><b>Stays on your PC</b><p>Dictation, clipboard history and window previews never leave the machine.</p></div>
       </div>
       <p class="fine">Every permission is explained in the <a href="https://gist.github.com/gsl0001/0c2ba872f82c192507a5e0ded852b368" target="_blank" rel="noopener">privacy policy</a>.</p>
+      <div class="cta cta-inline">
+        <a class="btn" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-privacy">Try Gola free</a>
+        <p class="price">No account needed, even for the trial.</p>
+      </div>
     </div>
   </section>
 
@@ -155,6 +173,10 @@
     <div class="shell faq">
       <h2>Questions</h2>
       <div>
+        <details>
+          <summary>What does it cost?</summary>
+          <p>Gola has a free trial on the Microsoft Store. After that it's US$6.99, paid once, and updates arrive through the Store. There is no subscription.</p>
+        </details>
         <details>
           <summary>Why did my antivirus flag it?</summary>
           <p>A keyboard hook, screen capture for the previews and launching apps together look like what antivirus engines watch for. A hold-and-flick launcher needs all three. The Store build is signed by Microsoft.</p>
@@ -179,9 +201,10 @@
     <div class="shell">
       <div class="final-in lens">
         <svg width="64" height="64" aria-hidden="true"><use href="#mark"/></svg>
-        <h2>Your apps, under your cursor.</h2>
-        <a class="btn btn-big" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-get">Get it on the Microsoft Store</a>
-        <p class="trust">Installs and updates through the Store</p>
+        <h2>Stop landing in the wrong window.</h2>
+        <p class="lede">Keep clicking the taskbar and digging for the window you had open, or hold one chord and flick to it.</p>
+        <a class="btn btn-big" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-get">Try Gola free on the Microsoft Store</a>
+        <p class="price">Free trial, then <b>US$6.99 once</b>. No subscription.</p>
       </div>
     </div>
   </section>

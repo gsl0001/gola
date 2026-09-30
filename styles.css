@@ -117,8 +117,19 @@ kbd {
     radial-gradient(52% 46% at 70% 78%, var(--bloom), transparent 72%),
     radial-gradient(30% 30% at 18% 12%, rgba(138, 180, 248, 0.10), transparent 70%);
 }
-.hero-copy { display: grid; gap: 24px; max-width: 820px; margin-bottom: 64px; }
-.cta-row { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; margin-top: 8px; }
+/* The product sits beside the pitch, so it is in the first screen, not under it. */
+.hero-in { display: grid; grid-template-columns: 5fr 6fr; gap: 56px; align-items: center; }
+.hero h1 { font-size: clamp(2.6rem, 5.2vw, 4.6rem); }
+.hero-copy { display: grid; gap: 24px; }
+.cta { display: grid; gap: 10px; justify-items: start; margin-top: 4px; }
+.price { color: var(--ink); font-size: 0.98rem; }
+.price b { font-weight: 600; }
+.cta-inline { margin-top: 40px; grid-auto-flow: column; align-items: center; justify-content: start; gap: 20px; }
+.facts {
+  list-style: none; margin: 8px 0 0; padding: 18px 0 0; border-top: 1px solid var(--line);
+  display: flex; gap: 32px; flex-wrap: wrap; color: var(--ink-dim); font-size: 0.92rem;
+}
+.facts b { display: block; font-family: var(--display); font-size: 1.9rem; font-weight: 800; color: var(--ink); line-height: 1.1; }
 .film { padding: 10px; }
 .film video { border-radius: 19px; width: 100%; aspect-ratio: 16 / 9; background: var(--tint); }
 
@@ -190,12 +201,13 @@ details p { color: var(--ink-dim); padding-bottom: 20px; max-width: 44em; }
 .foot a:hover { color: var(--ink); }
 
 @media (max-width: 960px) {
+  .hero-in { grid-template-columns: 1fr; gap: 40px; }
   .themes { grid-template-columns: repeat(4, 1fr); }
   .split-head, .faq { grid-template-columns: 1fr; }
 }
 @media (max-width: 720px) {
   .hero { padding-block: 56px 48px; }
-  .hero-copy { margin-bottom: 40px; }
+  .cta-inline { grid-auto-flow: row; }
   .band { padding-block: 72px; }
   .steps, .grid, .pillars { grid-template-columns: 1fr; gap: 28px; }
   .themes { grid-template-columns: repeat(2, 1fr); }
