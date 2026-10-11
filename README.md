@@ -10,7 +10,7 @@ One static page. No generator and no build step:
 index.html    the page
 styles.css    the design system
 keys.js       the pressable keycaps: hero Ctrl+Alt, chord board, Hold/Flick/Release
-assets/       v108 (desk showcase film), v107 (Liquid stills, themes), favicon
+assets/       v109 (hero loop: 4K screen takes on the eclipse backdrop), v107 (Liquid stills, themes), favicon
 ```
 
 The only external request is the Google Fonts stylesheet for Archivo (variable width). It
