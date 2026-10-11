@@ -6,11 +6,15 @@ if (chord) {
   const caps = [...chord.querySelectorAll('[data-key]')];
   const say = chord.querySelector('[data-say]');
   const idle = say.textContent;
+  const down = name => caps.some(c => c.dataset.key === name && c.classList.contains('is-down'));
   const sync = () => {
-    const held = caps.every(c => c.classList.contains('is-down'));
+    const thumb = down('Forward');
+    const held = thumb || (down('Control') && down('Alt'));
     chord.classList.toggle('is-held', held);
     caps.forEach(c => c.setAttribute('aria-pressed', c.classList.contains('is-down')));
-    say.textContent = held ? 'That’s it. With Gola running, the wheel is open under your cursor now.' : idle;
+    say.textContent = !held ? idle
+      : thumb ? 'That’s it. With Gola on Forward, the wheel is open under your cursor now.'
+      : 'Same wheel, from the keyboard.';
   };
   const set = (name, down) => {
     const cap = caps.find(c => c.dataset.key === name);
@@ -19,6 +23,10 @@ if (chord) {
   addEventListener('keydown', e => set(e.key, true));
   addEventListener('keyup', e => set(e.key, false));
   addEventListener('blur', () => caps.forEach(c => set(c.dataset.key, false)));
+  // The real forward button (button 4). Swallow its release so the browser doesn't navigate forward.
+  addEventListener('mousedown', e => { if (e.button === 4) { e.preventDefault(); set('Forward', true); } });
+  addEventListener('mouseup', e => { if (e.button === 3 || e.button === 4) { e.preventDefault(); set('Forward', false); } });
+  addEventListener('auxclick', e => { if (e.button === 3 || e.button === 4) e.preventDefault(); });
   // Pointer: a press holds the cap down until release, so two fingers (or two clicks) make the chord.
   caps.forEach(c => {
     c.addEventListener('pointerdown', e => { e.preventDefault(); set(c.dataset.key, !c.classList.contains('is-down')); });
@@ -36,10 +44,12 @@ if (board) {
     const m = on(mods).map(b => b.dataset.mod);
     const p = on(mice).map(b => b.dataset.mouse);
     let text, note = '';
-    if (p.length) { text = 'Hold ' + p.join(' + '); note = 'Gola takes this button over'; }
-    else if (m.length) {
+    if (p.length) {
+      text = 'Hold ' + p.join(' + ');
+      note = p.join() === 'Forward' ? 'one tap in first-run setup' : 'Gola takes this button over';
+    } else if (m.length) {
       text = m.join(' + ');
-      if (text === 'Ctrl + Alt') note = 'the default';
+      if (text === 'Ctrl + Alt') note = 'the keyboard default';
       else if (m.length === 1) note = 'pair it with another modifier';
     } else { text = 'Pick a key or a button'; }
     out.innerHTML = '';

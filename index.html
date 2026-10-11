@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap">
-  <link rel="stylesheet" href="styles.css?v=112">
+  <link rel="stylesheet" href="styles.css?v=114">
   <link rel="preload" as="image" href="assets/v108/showcase.jpg">
 
   <meta property="og:title" content="Gola — your whole desktop, under your cursor">
@@ -54,7 +54,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
     </a>
     <nav class="topnav" aria-label="Sections">
       <a href="#reach">What it reaches</a>
-      <a href="#chord">Chords</a>
+      <a href="#chord">Triggers</a>
       <a href="#faq">Questions</a>
     </nav>
     <a class="key key-enter key-sm" href="https://apps.microsoft.com/detail/9NGHFH4J7JMD?cid=site-top"><span class="cap">Try it free</span></a>
@@ -68,15 +68,39 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       <h1>Your whole desktop,<br class="br-wide"> under your cursor.</h1>
       <div class="hero-copy">
         <p class="lede">
-          Hold a chord or a mouse button and a wheel opens right where you are pointing. Point at an app,
-          its open windows fan out, and let go on the one you meant. Windows&nbsp;10 and&nbsp;11.
+          Hold the forward button on the side of your mouse and a wheel opens right where you are
+          pointing. Point at an app, its open windows fan out, let go on the one you meant.
+          Or hold Ctrl+Alt. Windows&nbsp;10 and&nbsp;11.
         </p>
 
-        <div class="chord" data-chord>
-          <button class="key key-xl" type="button" data-key="Control" aria-pressed="false"><span class="cap"><span class="legend">Ctrl</span></span></button>
-          <span class="plus" aria-hidden="true">+</span>
-          <button class="key key-xl" type="button" data-key="Alt" aria-pressed="false"><span class="cap"><span class="legend">Alt</span></span></button>
-          <p class="chord-say" aria-live="polite" data-say>Hold both. That is the whole gesture.</p>
+        <div class="trigger" data-chord>
+          <button class="mouse" type="button" data-key="Forward" aria-pressed="false" aria-label="Forward mouse button: press and hold">
+            <svg viewBox="14 0 120 220" width="120" height="220" aria-hidden="true">
+              <defs>
+                <linearGradient id="shell" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#4A47C2"/><stop offset="100%" stop-color="#26238A"/>
+                </linearGradient>
+                <linearGradient id="lit" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#A8E6FF"/><stop offset="100%" stop-color="#C9B8FF"/>
+                </linearGradient>
+              </defs>
+              <path class="m-body" d="M38 70 C38 30 56 8 80 8 C104 8 122 30 122 70 L122 150 C122 190 104 212 80 212 C56 212 38 190 38 150 Z" fill="url(#shell)"/>
+              <path d="M80 9 V78 M39 78 H121" stroke="#17155A" stroke-width="2.5" fill="none"/>
+              <rect x="74" y="28" width="12" height="28" rx="6" fill="#17155A"/>
+              <rect class="m-fwd" x="26" y="92" width="20" height="30" rx="7"/>
+              <rect class="m-back" x="26" y="128" width="20" height="30" rx="7"/>
+            </svg>
+            <span class="mouse-label"><b>Forward</b> thumb button</span>
+          </button>
+          <div class="alt-chord">
+            <span class="or">or</span>
+            <span class="pair">
+              <button class="key key-md" type="button" data-key="Control" aria-pressed="false"><span class="cap"><span class="legend">Ctrl</span></span></button>
+              <span class="plus" aria-hidden="true">+</span>
+              <button class="key key-md" type="button" data-key="Alt" aria-pressed="false"><span class="cap"><span class="legend">Alt</span></span></button>
+            </span>
+          </div>
+          <p class="chord-say" aria-live="polite" data-say>Try it: hold your mouse's forward button now.</p>
         </div>
 
         <div class="buy">
@@ -103,7 +127,7 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
       <ol class="stroke" data-stroke>
         <li>
           <span class="key key-md"><span class="cap"><span class="legend">Hold</span></span></span>
-          <p>Ctrl+Alt, any chord you choose, or a mouse thumb button. The wheel opens where you are pointing.</p>
+          <p>Your mouse's forward thumb button, or Ctrl+Alt on the keyboard. The wheel opens where you are pointing.</p>
         </li>
         <li>
           <span class="key key-md"><span class="cap"><span class="legend">Flick</span></span></span>
@@ -176,21 +200,21 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   <section class="field-alpha" id="chord" aria-labelledby="chord-h">
     <div class="shell chord-in">
       <div>
-        <h2 id="chord-h">Any chord you like. Or a mouse button.</h2>
-        <p class="lede">Ctrl+Alt is only the start. Light up a combination below; any mix of the four modifiers works, and so do the Back, Forward and Middle mouse buttons.</p>
-        <p class="chord-out" aria-live="polite" data-chord-out>Ctrl + Alt <span>· the default</span></p>
+        <h2 id="chord-h">Your thumb first. Your keyboard if you'd rather.</h2>
+        <p class="lede">The forward button already sits under your thumb, so the wheel needs no reach and no keyboard. Pick it in Gola's first-run setup. Back and Middle work too, and on the keyboard any mix of Ctrl, Alt, Shift and Win.</p>
+        <p class="chord-out" aria-live="polite" data-chord-out>Hold Forward</p>
       </div>
       <div class="board" data-board>
+        <div class="board-row" role="group" aria-label="Mouse buttons">
+          <button class="key key-md" type="button" data-mouse="Forward" aria-pressed="true"><span class="cap"><span class="legend">Forward</span></span></button>
+          <button class="key key-md" type="button" data-mouse="Back" aria-pressed="false"><span class="cap"><span class="legend">Back</span></span></button>
+          <button class="key key-md" type="button" data-mouse="Middle" aria-pressed="false"><span class="cap"><span class="legend">Middle</span></span></button>
+        </div>
         <div class="board-row" role="group" aria-label="Keyboard modifiers">
-          <button class="key key-md" type="button" data-mod="Ctrl" aria-pressed="true"><span class="cap"><span class="legend">Ctrl</span></span></button>
-          <button class="key key-md" type="button" data-mod="Alt" aria-pressed="true"><span class="cap"><span class="legend">Alt</span></span></button>
+          <button class="key key-md" type="button" data-mod="Ctrl" aria-pressed="false"><span class="cap"><span class="legend">Ctrl</span></span></button>
+          <button class="key key-md" type="button" data-mod="Alt" aria-pressed="false"><span class="cap"><span class="legend">Alt</span></span></button>
           <button class="key key-md" type="button" data-mod="Shift" aria-pressed="false"><span class="cap"><span class="legend">Shift</span></span></button>
           <button class="key key-md" type="button" data-mod="Win" aria-pressed="false"><span class="cap"><span class="legend">Win</span></span></button>
-        </div>
-        <div class="board-row" role="group" aria-label="Mouse buttons">
-          <button class="key key-md" type="button" data-mouse="Back" aria-pressed="false"><span class="cap"><span class="legend">Back</span></span></button>
-          <button class="key key-md" type="button" data-mouse="Forward" aria-pressed="false"><span class="cap"><span class="legend">Forward</span></span></button>
-          <button class="key key-md" type="button" data-mouse="Middle" aria-pressed="false"><span class="cap"><span class="legend">Middle</span></span></button>
         </div>
       </div>
     </div>
@@ -282,6 +306,6 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
   </div>
 </footer>
 
-<script src="keys.js?v=109" defer></script>
+<script src="keys.js?v=113" defer></script>
 </body>
 </html>

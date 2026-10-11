@@ -130,7 +130,7 @@ a.key:active, button.key:active, .key.is-down { box-shadow: 0 8px 14px -8px rgba
 .field-mod .key .cap { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), inset 0 -2px 3px rgba(0, 0, 0, 0.2); }
 
 /* Enter, lit chord keys and the featured tool: the only coloured caps on the page */
-.key.key-enter, .key[aria-pressed="true"], .key.key-lit, .chord.is-held .key {
+.key.key-enter, .key[aria-pressed="true"], .key.key-lit {
   --top-a: var(--enter-a); --top-b: var(--enter-b); --skirt: var(--enter-skirt); --ink: var(--enter-ink);
 }
 .key.key-enter .cap { font-weight: 800; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -2px 3px rgba(0, 0, 0, 0.15); }
@@ -173,10 +173,26 @@ a.key:active, button.key:active, .key.is-down { box-shadow: 0 8px 14px -8px rgba
 @media (min-width: 861px) { .buy .key-lg .cap { white-space: nowrap; } }
 .hero-copy { display: grid; gap: 26px; }
 
-.chord { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 18px; }
-.plus { font-size: 2rem; font-weight: 400; color: var(--on-mod-dim); }
+/* the trigger: the mouse's forward button leads, Ctrl+Alt is the alternative */
+.trigger { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 22px; }
+.mouse {
+  display: grid; justify-items: center; gap: 8px;
+  background: none; border: 0; padding: 0; color: var(--on-mod); font: inherit; cursor: pointer;
+  -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+}
+.mouse svg { width: clamp(78px, 6.6vw, 96px); height: auto; overflow: visible; filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.45)); }
+.m-fwd { fill: url(#lit); stroke: #6F63C9; stroke-width: 2; transition: transform 120ms var(--ease); transform-box: fill-box; transform-origin: right center; }
+.m-back { fill: #2F2C96; stroke: #17155A; stroke-width: 2; }
+.mouse[aria-pressed="true"] .m-fwd { transform: translateX(4px) scaleX(0.82); }
+.mouse-label { font-size: 0.92rem; color: var(--on-mod-dim); }
+.mouse-label b { color: var(--on-mod); font-variation-settings: "wdth" 112; }
+.alt-chord { display: flex; align-items: center; gap: 14px; }
+.or { font-size: 1.05rem; color: var(--on-mod-dim); }
+.pair { display: flex; align-items: center; gap: 10px; }
+.pair .key-md .cap { min-width: 4.4em; min-height: 2.9em; }
+.plus { font-size: 1.6rem; font-weight: 400; color: var(--on-mod-dim); }
 .chord-say { flex-basis: 100%; font-size: 0.95rem; color: var(--on-mod-dim); min-height: 1.6em; }
-.chord.is-held .chord-say { color: var(--on-mod); }
+.trigger.is-held .chord-say { color: var(--on-mod); }
 
 .buy { display: grid; gap: 12px; justify-items: start; }
 
@@ -314,6 +330,7 @@ a.key:active, button.key:active, .key.is-down { box-shadow: 0 8px 14px -8px rgba
    keys still light when held, they just don't travel. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .mouse[aria-pressed="true"] .m-fwd { transform: none; filter: brightness(0.9); }
   .cap, .key, .colorways img { transition-property: filter, background-color, color; }
   a.key:active .cap, button.key:active .cap, .key.is-down .cap { transform: none; filter: brightness(0.92); }
   .colorways li:hover img { transform: none; }
