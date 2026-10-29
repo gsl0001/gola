@@ -22,6 +22,12 @@ Clips are versioned by filename (`window-fanout-2.mp4`). GitHub Pages gives no c
 cache headers, so a corrected clip must get a new name — overwriting one in place leaves every
 returning visitor on the old file.
 
+## Before merging to main (Mac page)
+
+`mac/index.html` ships with `LEMON_SQUEEZY_CHECKOUT_URL` as the Buy button's href until the
+Lemon Squeezy product exists. Run `node check-placeholders.js` before every merge to `main`:
+it exits 1 while the placeholder is still there.
+
 ## Contact
 
 Questions or bugs: <gsl456789@gmail.com> ·
