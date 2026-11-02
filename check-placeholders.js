@@ -1,9 +1,9 @@
 // Run before merging mac-launch to main:  node check-placeholders.js
-// Exits 1 while the Lemon Squeezy checkout placeholder is still in the Mac page.
+// Exits 1 while the Stripe Payment Link placeholder is still in the Mac page.
 const fs = require('fs');
 const path = require('path');
 
-const PLACEHOLDERS = ['LEMON_SQUEEZY_CHECKOUT_URL'];
+const PLACEHOLDERS = ['STRIPE_PAYMENT_LINK'];
 const FILES = ['mac/index.html', 'buy/index.html'];
 
 let bad = 0;
@@ -17,7 +17,7 @@ for (const f of FILES) {
   }
 }
 if (bad) {
-  console.error('Do not deploy: put the real Lemon Squeezy checkout URL in mac/index.html first.');
+  console.error('Do not deploy: put the real Stripe Payment Link URL in mac/index.html first.');
   process.exit(1);
 }
 console.log('No placeholders left.');

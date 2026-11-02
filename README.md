@@ -24,8 +24,8 @@ returning visitor on the old file.
 
 ## Before merging to main (Mac page)
 
-`mac/index.html` ships with `LEMON_SQUEEZY_CHECKOUT_URL` as the Buy button's href until the
-Lemon Squeezy product exists. Run `node check-placeholders.js` before every merge to `main`:
+`mac/index.html` ships with `STRIPE_PAYMENT_LINK` as the Buy button's href until the
+Stripe Payment Link exists. Run `node check-placeholders.js` before every merge to `main`:
 it exits 1 while the placeholder is still there.
 
 ## Contact
